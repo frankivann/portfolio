@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+
+/* Dark mode is driven by [data-theme="dark"] on <html> (set in Layout.astro),
+   not by prefers-color-scheme directly, so the toggle can override the system setting. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@theme {
+	--color-primary: #ff6a00;
+	--color-secondary: #2563eb;
+
+	/* Body/UI text. Trial: Manrope (via Fontsource CDN in Layout.astro), falling
+	   back to the system stack if it hasn't loaded yet or gets removed. */
+	--font-sans:
+		'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		'Helvetica Neue', Arial, sans-serif;
+
+	/* Headings only (applied via the `font-heading` utility). Trial: Geist. */
+	--font-heading:
+		'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		'Helvetica Neue', Arial, sans-serif;
+}
+
+@layer base {
+	/* Single source of truth for the light/dark color transition: every element
+	   fades bg/border/text at the same 200ms, so nothing (e.g. the sticky header)
+	   snaps ahead of the rest of the page when the theme toggles. Elements that
+	   need a different timing (e.g. the nav hover indicator) declare their own
+	   transition-* utility, which overrides this by specificity. */
+	*,
+	*::before,
+	*::after {
+		transition-property: background-color, border-color, color;
+		transition-duration: 200ms;
+		transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	body {
+		@apply bg-neutral-100 text-neutral-900 antialiased dark:bg-neutral-900 dark:text-neutral-100;
+	}
+}

@@ -1,0 +1,71 @@
+---
+const phrases = [
+	'Full Stack Web Developer',
+	'Tech Lead',
+	'Product and Business Focused'
+]
+---
+
+<section
+	id='home'
+	class='flex min-h-[60vh] flex-col items-center justify-center border-b border-neutral-200/80 px-6 text-center dark:border-neutral-800/80'
+>
+	<h1
+		class='font-heading text-5xl font-semibold tracking-tight text-neutral-900 sm:text-6xl md:text-8xl dark:text-white'
+	>
+		Franklin Alvarado.
+	</h1>
+	<p
+		id='phrase-rotator'
+		class='mt-4 text-base font-normal text-neutral-500 sm:text-2xl dark:text-neutral-400'
+	>
+		{phrases[0]}
+	</p>
+</section>
+
+<script define:vars={{ phrases }}>
+	const el = document.getElementById('phrase-rotator')
+	const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+	let index = 0
+
+	const CHAR_CLASSES =
+		'phrase-char inline-block translate-y-1 opacity-0 blur-[6px] transition-[opacity,filter,transform] duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] data-[state=visible]:translate-y-0 data-[state=visible]:opacity-100 data-[state=visible]:blur-none'
+
+	function render(phrase) {
+		el.innerHTML = ''
+		const frag = document.createDocumentFragment()
+		Array.from(phrase).forEach((char, i) => {
+			const span = document.createElement('span')
+			span.className = CHAR_CLASSES
+			span.style.transitionDelay = reduceMotion ? '0ms' : `${i * 22}ms`
+			span.textContent = char === ' ' ? ' ' : char
+			frag.appendChild(span)
+		})
+		el.appendChild(frag)
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				el.querySelectorAll('.phrase-char').forEach((s) => {
+					s.dataset.state = 'visible'
+				})
+			})
+		})
+	}
+
+	function rotate() {
+		const chars = Array.from(el.querySelectorAll('.phrase-char'))
+		chars.forEach((s) => {
+			s.style.transitionDelay = '0ms'
+			delete s.dataset.state
+		})
+		setTimeout(
+			() => {
+				index = (index + 1) % phrases.length
+				render(phrases[index])
+			},
+			reduceMotion ? 0 : 420
+		)
+	}
+
+	render(phrases[0])
+	setInterval(rotate, 5000)
+</script>

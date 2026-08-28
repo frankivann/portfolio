@@ -1,0 +1,34 @@
+---
+interface Tech {
+	name: string
+	icon: string
+	color: string
+}
+
+interface Props {
+	technologies: Tech[]
+}
+
+const { technologies } = Astro.props
+---
+
+<div class='flex items-center -space-x-2'>
+	{
+		technologies.map((tech) => (
+			<div class='group relative hover:z-10'>
+				<div class='flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-white bg-neutral-100 shadow-sm sm:size-9'>
+					<svg
+						viewBox='0 0 24 24'
+						class='size-4 sm:size-[18px]'
+						fill='currentColor'
+						style={`color: #${tech.color}`}
+						set:html={tech.icon}
+					/>
+				</div>
+				<span class='pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 rounded-md bg-neutral-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 shadow-sm transition-opacity duration-150 group-hover:opacity-100'>
+					{tech.name}
+				</span>
+			</div>
+		))
+	}
+</div>

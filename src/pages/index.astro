@@ -1,24 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import Hero from '../components/Hero.astro'
+import Proyectos from '../components/Proyectos.astro'
+import Footer from '../components/Footer.astro'
+import Header from '../components/Header.astro'
+import ScrollProgress from '../components/ScrollProgress.astro'
 ---
 
 <Layout>
+	<ScrollProgress />
+
 	<main>
 		<Hero />
 
-		<section
-			id='proyectos'
-			class='flex min-h-screen items-center justify-center border-b border-neutral-200/80 text-sm text-neutral-500 dark:border-neutral-800/80 dark:text-neutral-400'
-		>
-			<p>Desarrollos — pendiente</p>
-		</section>
-
-		<section
-			id='contacto'
-			class='flex min-h-screen items-center justify-center text-sm text-neutral-500 dark:text-neutral-400'
-		>
-			<p>Contacto — pendiente</p>
-		</section>
+		<Proyectos />
 	</main>
+
+	<Footer />
 </Layout>

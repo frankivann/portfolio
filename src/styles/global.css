@@ -18,6 +18,9 @@
 	--font-heading:
 		'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 		'Helvetica Neue', Arial, sans-serif;
+
+	/* Project-title accent (applied via the `font-caveat` utility). Trial: Caveat. */
+	--font-caveat: 'Caveat', cursive;
 }
 
 @layer base {

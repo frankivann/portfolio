@@ -1,0 +1,170 @@
+---
+const TICK_COUNT = 36
+const MAJOR_EVERY = 7
+
+const ticks = Array.from(
+	{ length: TICK_COUNT },
+	(_, i) => i % MAJOR_EVERY === 0
+)
+---
+
+<div
+	id='scroll-progress'
+	class='pointer-events-none fixed top-1/2 left-0 z-40 hidden -translate-y-1/2 opacity-0 transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] lg:block'
+	aria-hidden='true'
+>
+	<div class='relative mx-8 flex flex-col gap-2'>
+		{
+			ticks.map((isMajor) => (
+				<span
+					class:list={[
+						'tick block h-px origin-left',
+						isMajor
+							? 'is-major w-10 bg-neutral-900 dark:bg-neutral-100'
+							: 'w-6 bg-neutral-400 dark:bg-neutral-600'
+					]}
+				/>
+			))
+		}
+
+		<span
+			id='progress-marker'
+			class='bg-primary absolute top-0 left-0 block h-px w-10 will-change-transform'
+		></span>
+
+		<svg
+			id='progress-arrow'
+			class='text-primary absolute top-0 -left-4 block h-2.5 w-2 will-change-transform'
+			viewBox='0 0 8 10'
+			fill='currentColor'
+		>
+			<path d='M0 0 L8 5 L0 10 Z'></path>
+		</svg>
+	</div>
+</div>
+
+<script>
+	const root = document.getElementById('scroll-progress')
+	const hoja = document.getElementById('hoja')
+	const marker = document.getElementById('progress-marker')
+	const arrow = document.getElementById('progress-arrow')
+	const ticks = Array.from(document.querySelectorAll<HTMLElement>('.tick'))
+
+	if (root && hoja && marker && arrow && ticks.length) {
+		// 1px tick + 8px gap (gap-2)
+		const STEP = 9
+		const TRACK = (ticks.length - 1) * STEP
+
+		// The arrow is 10px tall and has to sit centred on a 1px tick.
+		const ARROW_OFFSET = -4.5
+
+		// Minor ticks are 24px and stretch up to 30px as the marker passes them.
+		const MINOR_MAX_SCALE = 30 / 24
+		const BOOST_REACH = 3.5
+
+		// Critically damped spring: the marker carries weight but never bounces.
+		const STIFFNESS = 200
+		const DAMPING = 28
+
+		const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+		let target = 0
+		let current = 0
+		let velocity = 0
+		let frame: number | null = null
+		let lastTime = 0
+
+		function measure() {
+			const rect = hoja!.getBoundingClientRect()
+			const viewport = window.innerHeight
+			const middle = viewport / 2
+
+			// The ruler lives at the vertical centre: it starts filling the moment the
+			// top of the hoja crosses that line and completes once the sheet has been
+			// read through — or the page runs out of scroll, whichever comes first.
+			const top = rect.top + window.scrollY
+			const maxScroll = document.documentElement.scrollHeight - viewport
+			const start = Math.max(0, top - middle)
+			const end = Math.max(
+				start + 1,
+				Math.min(top + rect.height - viewport, maxScroll)
+			)
+
+			root!.style.opacity =
+				window.scrollY >= start && rect.bottom > 0 ? '1' : '0'
+
+			const progress = (window.scrollY - start) / (end - start)
+			return Math.min(1, Math.max(0, progress))
+		}
+
+		function paint(progress: number) {
+			const offset = progress * TRACK
+
+			marker!.style.transform = `translate3d(0, ${offset}px, 0)`
+			arrow!.style.transform = `translate3d(0, ${offset + ARROW_OFFSET}px, 0)`
+
+			const head = progress * (ticks.length - 1)
+
+			ticks.forEach((tick, i) => {
+				if (tick.classList.contains('is-major')) return
+				const proximity = Math.max(0, 1 - Math.abs(i - head) / BOOST_REACH)
+				const scale = 1 + (MINOR_MAX_SCALE - 1) * proximity
+				tick.style.transform = `scaleX(${scale})`
+			})
+		}
+
+		function settle(now: number) {
+			const delta = Math.min((now - lastTime) / 1000, 1 / 30)
+			lastTime = now
+
+			velocity += (STIFFNESS * (target - current) - DAMPING * velocity) * delta
+			current += velocity * delta
+
+			paint(current)
+
+			if (Math.abs(target - current) > 0.0002 || Math.abs(velocity) > 0.0002) {
+				frame = requestAnimationFrame(settle)
+				return
+			}
+
+			current = target
+			velocity = 0
+			paint(current)
+			frame = null
+		}
+
+		function onScroll() {
+			target = measure()
+
+			if (reduceMotion) {
+				current = target
+				paint(current)
+				return
+			}
+
+			if (frame === null) {
+				lastTime = performance.now()
+				frame = requestAnimationFrame(settle)
+			}
+		}
+
+		addEventListener('scroll', onScroll, { passive: true })
+		addEventListener('resize', onScroll)
+
+		// requestAnimationFrame is frozen while the tab is in the background, so the
+		// spring would resume from a stale position. Snap it back on return.
+		document.addEventListener('visibilitychange', () => {
+			if (document.hidden) return
+			if (frame !== null) cancelAnimationFrame(frame)
+			frame = null
+			velocity = 0
+			target = measure()
+			current = target
+			paint(current)
+		})
+
+		target = measure()
+		current = target
+		paint(current)
+	}
+</script>

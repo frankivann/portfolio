@@ -20,8 +20,8 @@ const ticks = Array.from(
 					class:list={[
 						'tick block h-px origin-left',
 						isMajor
-							? 'is-major w-10 bg-neutral-900 dark:bg-neutral-100'
-							: 'w-6 bg-neutral-400 dark:bg-neutral-600'
+							? 'is-major w-10 bg-neutral-900'
+							: 'w-6 bg-neutral-400'
 					]}
 				/>
 			))
@@ -45,12 +45,12 @@ const ticks = Array.from(
 
 <script>
 	const root = document.getElementById('scroll-progress')
-	const hoja = document.getElementById('hoja')
+	const sheet = document.getElementById('sheet')
 	const marker = document.getElementById('progress-marker')
 	const arrow = document.getElementById('progress-arrow')
 	const ticks = Array.from(document.querySelectorAll<HTMLElement>('.tick'))
 
-	if (root && hoja && marker && arrow && ticks.length) {
+	if (root && sheet && marker && arrow && ticks.length) {
 		// 1px tick + 8px gap (gap-2)
 		const STEP = 9
 		const TRACK = (ticks.length - 1) * STEP
@@ -75,12 +75,12 @@ const ticks = Array.from(
 		let lastTime = 0
 
 		function measure() {
-			const rect = hoja!.getBoundingClientRect()
+			const rect = sheet!.getBoundingClientRect()
 			const viewport = window.innerHeight
 			const middle = viewport / 2
 
 			// The ruler lives at the vertical centre: it starts filling the moment the
-			// top of the hoja crosses that line and completes once the sheet has been
+			// top of the sheet crosses that line and completes once the sheet has been
 			// read through — or the page runs out of scroll, whichever comes first.
 			const top = rect.top + window.scrollY
 			const maxScroll = document.documentElement.scrollHeight - viewport

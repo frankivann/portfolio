@@ -22,15 +22,15 @@ Combines two things most candidate portfolios keep separate: technical leadershi
 
 Static Astro site, built section by section (Header sets the visual baseline; each section is validated in-browser before moving to the next). Current sections:
 
-- **Header** — nav, dark/light theme toggle, LinkedIn link.
+- **Header** — logo mark + "Contáctame" mailto button. Light mode only (dark mode was removed).
 - **Hero** — name, rotating role/phrase line.
-- **Proyectos** — project case studies as a single "hoja" (paper sheet) surface. First entry: Multibrand (Servicios Turísticos Panameños — National, Alamo, Enterprise car rental brands), with tech-stack icons and numbered sub-sections (e.g. "01 SEO") breaking down specific impact areas.
+- **Projects** (`Projects.astro`, `#projects`) — project case studies as a single "hoja" (paper sheet) surface. First entry: Multibrand (Servicios Turísticos Panameños — National, Alamo, Enterprise car rental brands), with tech-stack icons and numbered sub-sections (e.g. "01 SEO") breaking down specific impact areas.
 - **Contacto** — currently a placeholder; scoped to become direct links (mailto + LinkedIn + GitHub), no contact form.
 
 ## Capabilities and Constraints
 
 - Fully static Astro site — no backend, no CMS, no form-handling service. Any "contact" mechanism must work without server infrastructure.
-- Dark/light theme driven by a `data-theme` attribute on `<html>`, toggled client-side and persisted via `localStorage`.
+- Light mode only — no dark theme, no theme toggle.
 - Typography is still in CDN trial mode (Fontsource via jsDelivr, not installed as a dependency): Geist for headings, Manrope for body, Caveat as a project-title accent. Not finalized.
 - `--color-secondary` token is defined but not yet used/confirmed anywhere in the UI.
 

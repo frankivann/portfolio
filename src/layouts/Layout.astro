@@ -55,22 +55,15 @@ const { title = 'Franklin Alvarado — Full Stack Web Developer' } = Astro.props
 		/>
 		<link
 			rel='stylesheet'
-			href='https://cdn.jsdelivr.net/npm/@fontsource/caveat@5/600.css'
+			href='https://cdn.jsdelivr.net/npm/@fontsource/kalam@5/400.css'
 		/>
 		<link
 			rel='stylesheet'
-			href='https://cdn.jsdelivr.net/npm/@fontsource/caveat@5/700.css'
+			href='https://cdn.jsdelivr.net/npm/@fontsource/kalam@5/700.css'
 		/>
-		<script is:inline>
-			const stored = localStorage.getItem('theme')
-			const theme =
-				stored ??
-				(matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-			document.documentElement.setAttribute('data-theme', theme)
-		</script>
 	</head>
 	<body>
-		<!-- <Header /> -->
+		<Header />
 
 		<slot />
 	</body>

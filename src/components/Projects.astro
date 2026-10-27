@@ -1,6 +1,24 @@
 ---
-import { ArrowDownRight } from '@lucide/astro'
+import Annotation from './Annotation.astro'
 import TechStack from './TechStack.astro'
+
+const brands = [
+	{ name: 'National', url: 'https://nationalpanama.com' },
+	{ name: 'Alamo', url: 'https://alamopanama.com' },
+	{ name: 'Enterprise', url: 'https://enterprisepanama.com' }
+]
+
+// Flecha de "abre fuera" (lucide arrow-up-right), inline como en TechStack.
+const arrowUpRight = `<svg class="size-3.5 shrink-0 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] sm:size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>`
+
+// Se arma como string porque el formateador mete un salto de línea entre `</a>`
+// y la puntuación, y ese salto se renderiza como un espacio: "National ↗ ,".
+const brandsHtml = brands
+	.map(
+		(brand, index) =>
+			`<a href="${brand.url}" target="_blank" rel="noopener noreferrer" aria-label="${brand.name} (se abre en una pestaña nueva)" class="brand-link group inline-flex items-center gap-0.5 font-medium decoration-primary underline-offset-4 hover:underline">${brand.name}${arrowUpRight}</a>${index < brands.length - 1 ? ', ' : '.'}`
+	)
+	.join('')
 
 const multibrandTech = [
 	{
@@ -40,7 +58,7 @@ const multibrandTech = [
 	}
 ]
 
-const pasarelaTech = [
+const paymentGatewayTech = [
 	{
 		name: 'Laravel',
 		color: 'FF2D20',
@@ -65,159 +83,122 @@ const pasarelaTech = [
 ---
 
 <section
-	id='proyectos'
-	class='bg-neutral-100 pb-16 dark:bg-neutral-900 sm:pb-24'
+	id='projects'
+	class='bg-mist-100 pb-16 sm:pb-24'
 >
 	<div
-		id='hoja'
+		id='sheet'
 		class='relative mx-auto min-h-[170vh] max-w-300 bg-white px-9 py-12 shadow-[0_0_40px_-4px_rgba(0,0,0,0.05)] sm:p-28'
 	>
-		<!-- <div
-			class='pointer-events-none font-caveatx absolute -top-12 left-0 flex items-center gap-1.5 text-xl font-medium text-neutral-300 dark:text-neutral-500'
-		>
-			<span>Proyectos</span>
-			<ArrowDownRight
-				class='size-6 text-neutral-300'
-				stroke-width={2}
-			/>
-		</div> -->
+		<Annotation
+			label='Proyectos'
+			class='absolute -top-15 right-0 hidden min-[1440px]:block'
+		/>
 
 		<article>
-			<!-- <h2
-				class='text-md font-medium tracking-tight text-neutral-300 sm:text-lg'
-			>
-				#1 Proyecto
-			</h2> -->
+			<div class='mt-8'>
+				<h2 class='font-kalam text-4xl font-bold text-neutral-800 sm:text-6xl'>
+					Multibrand
+				</h2>
 
-			<div class='grid grid-cols-1 items-center gap-12 mt-8 sm:grid-cols-2'>
-				<div>
-					<div class='relative flex items-center'>
-						<!-- <span
-							class='bg-primary absolute -left-6 size-4 shrink-0 rounded-full sm:-left-8 sm:size-5'
+				<p
+					class='mt-3 text-sm leading-relaxed font-normal text-neutral-800 sm:text-xl'
+				>
+					Una sola lógica de negocio capaz de renderizar 3 marcas distintas: <Fragment
+						set:html={brandsHtml}
+					/>
+				</p>
+
+				<p
+					class='mt-3 text-sm leading-relaxed font-normal text-neutral-800 sm:text-xl'
+				>
+					Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti aut
+					odit laudantium harum voluptatibus molestias facilis minus nulla
+					praesentium deserunt. Temporibus quisquam modi dolorem laboriosam eos
+					atque nesciunt obcaecati labore!
+				</p>
+
+				<div class='grid grid-cols-3 gap-6'>
+					<div class='flex flex-col items-center justify-center gap-4'>
+						<div
+							class='mt-12 flex items-center justify-center w-full h-62 border border-neutral-200 rounded-3xl bg-neutral-50/50'
 						>
-						</span> -->
-						<h3
-							class='font-caveat text-4xl font-bold text-neutral-800 sm:text-6xl'
-						>
-							Multibrand
-						</h3>
+							<img class='h-full object-cover' />
+						</div>
+
+						<p class='font-medium text-neutral-400'>
+							All footage is rendered by me
+						</p>
 					</div>
 
+					<div class='flex flex-col items-center justify-center gap-4'>
+						<div
+							class='mt-12 flex items-center justify-center w-full h-62 border border-neutral-200 rounded-3xl bg-neutral-50/50'
+						>
+							<img class='h-full object-cover' />
+						</div>
+
+						<p class='font-medium text-neutral-400'>
+							All footage is rendered by me
+						</p>
+					</div>
+
+					<div class='flex flex-col items-center justify-center gap-4'>
+						<div
+							class='mt-12 flex items-center justify-center w-full h-62 border border-neutral-200 rounded-3xl bg-neutral-50/50'
+						>
+							<img class='h-full object-cover' />
+						</div>
+
+						<p class='font-medium text-neutral-400'>
+							All footage is rendered by me
+						</p>
+					</div>
+				</div>
+
+				<div class='mt-20'>
+					<h3
+						class='font-heading text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl'
+					>
+						40% de mejora en velocidad de entrega
+					</h3>
+
+					<p
+						class='mt-3 text-sm leading-relaxed font-normal text-neutral-800 sm:text-xl'
+					>
+						La empresa operaba con 3 marcas, cada una con su propia web. Eso se
+						traducía en demoras para la puesta en producción de nuevas
+						funcionalidades compartidas por marcas. Requería replicar código y
+						ajustar versiones frecuentemente.
+					</p>
+
+					<p
+						class='mt-3 text-sm leading-relaxed font-normal text-neutral-800 sm:text-xl'
+					>
+						Lideré el proyecto de multibrand con el objetivo de mitigar estas
+						demoras, y fue un éxito. Con una buena arquitectura, buenas
+						prácticas y convenciones se aumentó la velocidad de puesta en
+						producción y entrega de valor.
+					</p>
+				</div>
+
+				<div class='mt-20'>
+					<h3
+						class='font-heading text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl'
+					>
+						SEO + Performance
+					</h3>
 					<p
 						class='mt-3 text-sm leading-relaxed font-normal text-neutral-500 sm:text-xl'
 					>
-						Plataforma que centraliza la lógica de negocio de 3 marcas de renta
-						de autos National, Alamo, Enterprise.
+						Google Tag Manager y Google Analytics para trackear conversiones.
 					</p>
 
-					<div class='mt-5'>
-						<TechStack technologies={multibrandTech} />
+					<div
+						class='mt-8 aspect-video w-full h-full rounded-3xl bg-neutral-50/50 border border-neutral-200'
+					>
 					</div>
 				</div>
-
-				<div
-					class='h-48 w-full rounded-2xl border-3 border-neutral-200 sm:h-56'
-				>
-				</div>
-			</div>
-
-			<div class='mt-20'>
-				<p
-					class='font-heading text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl'
-				>
-					La web quedó un 40% más rápida.
-				</p>
-				<p
-					class='mt-3 text-sm leading-relaxed font-normal text-neutral-500 sm:text-xl'
-				>
-					Implementado con Google Tag Manager y Google Analytics para trackear
-					conversiones, entender los embudos de reserva y medir el
-					comportamiento real de los usuarios en cada marca. Los datos
-					permitieron priorizar optimizaciones con evidencia en lugar de
-					suposiciones.
-				</p>
-
-				<div
-					class='mt-8 aspect-video w-full rounded-2xl border-3 border-neutral-200'
-				>
-				</div>
-			</div>
-		</article>
-
-		<div
-			class='-mx-9 my-16 h-[2px] text-neutral-200/80 sm:-mx-22 sm:my-20'
-			style='background-image: repeating-linear-gradient(to right, currentColor 0 10px, transparent 10px 20px);'
-		>
-		</div>
-
-		<article>
-			<!-- <h2
-				class='text-md font-medium tracking-tight text-neutral-300 sm:text-lg'
-			>
-				#2 Proyecto
-			</h2> -->
-
-			<h3
-				class='mt-8 font-caveat text-4xl font-bold text-neutral-800 sm:text-6xl'
-			>
-				Pasarela de Pago Wompi
-			</h3>
-
-			<p
-				class='mt-3 text-sm leading-relaxed font-normal text-neutral-500 sm:text-xl'
-			>
-				Implementación de una pasarela de pago con Wompi para procesar
-				transacciones en línea de forma segura y confiable. Se integraron
-				múltiples métodos de pago y validación en tiempo real para ofrecer una
-				experiencia de checkout fluida y sin fricción para los usuarios.
-			</p>
-
-			<div class='mt-5'>
-				<TechStack technologies={pasarelaTech} />
-			</div>
-
-			<div
-				class='mt-8 aspect-video w-full rounded-2xl border-3 border-neutral-200'
-			>
-			</div>
-		</article>
-
-		<div
-			class='-mx-9 my-16 h-[2px] text-neutral-200/80 sm:-mx-22 sm:my-20'
-			style='background-image: repeating-linear-gradient(to right, currentColor 0 10px, transparent 10px 20px);'
-		>
-		</div>
-
-		<article>
-			<!-- <h2
-				class='text-md font-medium tracking-tight text-neutral-300 sm:text-lg'
-			>
-				#3 Proyecto
-			</h2> -->
-
-			<h3
-				class='mt-8 font-caveat text-4xl font-bold text-neutral-800 sm:text-6xl'
-			>
-				Thoughts App
-			</h3>
-
-			<p
-				class='mt-3 text-sm leading-relaxed font-normal text-neutral-500 select-none sm:text-xl'
-				style='mask-image: linear-gradient(to bottom, black 20%, transparent 95%); -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 95%);'
-			>
-				Thoughts App es una pequeña aplicación tipo TODO para anotar lo que
-				ronda tu cabeza durante el día: ideas sueltas, pendientes, cosas en las
-				que estás pensando en el momento. Nació como un espacio simple, sin
-				fricción, para capturar pensamientos antes de que se pierdan.
-			</p>
-
-			<div class='mt-12 flex justify-center'>
-				<a
-					href='#contacto'
-					class='rounded-full bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-700'
-				>
-					Contáctame para conocer más
-				</a>
 			</div>
 		</article>
 	</div>

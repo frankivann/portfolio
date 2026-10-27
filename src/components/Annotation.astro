@@ -1,0 +1,85 @@
+---
+interface Props {
+	label: string
+	class?: string
+}
+
+const { label, class: className } = Astro.props
+---
+
+<div
+	class:list={[
+		'annotation pointer-events-none text-neutral-300 select-none',
+		className
+	]}
+	aria-hidden='true'
+>
+	<span class='font-kalam block text-2xl leading-none font-normal'>
+		{label}
+	</span>
+
+	<svg
+		class='absolute top-2.5 left-full h-[110px] w-20 overflow-visible'
+		viewBox='0 0 128 176'
+		fill='none'
+		stroke='currentColor'
+		stroke-width='2.4'
+		stroke-linecap='round'
+		stroke-linejoin='round'
+	>
+		<path
+			class='annotation-stroke'
+			pathLength='1'
+			d='M18 10 C58 1 100 16 114 52 C124 79 118 112 92 133 C78 145 62 151 44 154'
+		></path>
+		<path
+			class='annotation-stroke annotation-head'
+			pathLength='1'
+			d='M63 160 C56 158.5 49 156.5 44 154 C49 149.5 54.5 145.5 60 142'
+		></path>
+	</svg>
+</div>
+
+<style>
+	/* The annotation is drawn on scroll-in: pathLength='1' normalises both strokes
+	   so one dash length covers the whole path regardless of its real geometry. */
+	.annotation-stroke {
+		stroke-dasharray: 1;
+		stroke-dashoffset: 1;
+	}
+
+	.annotation.is-drawn .annotation-stroke {
+		stroke-dashoffset: 0;
+		transition: stroke-dashoffset 1000ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	/* The arrowhead lands only once the curve has almost finished travelling. */
+	.annotation.is-drawn .annotation-head {
+		transition-duration: 320ms;
+		transition-delay: 780ms;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.annotation-stroke {
+			stroke-dashoffset: 0;
+		}
+
+		.annotation.is-drawn .annotation-stroke {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	const observer = new IntersectionObserver((entries) => {
+		entries.forEach((entry) => {
+			if (!entry.isIntersecting) return
+			entry.target.classList.add('is-drawn')
+			observer.unobserve(entry.target)
+		})
+	})
+
+	document
+		.querySelectorAll('.annotation')
+		.forEach((annotation) => observer.observe(annotation))
+</script>

@@ -12,7 +12,6 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@lucide/astro": "^1.33.0",
     "astro": "^7.2.4"
   },
   "allowScripts": {

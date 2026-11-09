@@ -1,0 +1,68 @@
+---
+interface Props {
+	id: string
+	title: string
+	index: number
+	total: number
+	/** Section number, e.g. "01". Projects have one; cover and colophon don't. */
+	section?: string
+	/** Right side of the letterhead. Defaults to the author's name. */
+	aside?: string
+	/**
+	 * "page" keeps an A-series proportion; "screen" fits the viewport exactly
+	 * (a sheet cut to your screen — something paper can't do); "note" is as
+	 * tall as its content.
+	 */
+	size?: 'page' | 'screen' | 'note'
+}
+
+const {
+	id,
+	title,
+	index,
+	total,
+	section,
+	aside = 'Franklin Alvarado',
+	size = 'page'
+} = Astro.props
+
+const pad = (n: number) => String(n).padStart(2, '0')
+---
+
+<section
+	id={id}
+	data-sheet
+	data-has-next={index < total - 1 ? '' : undefined}
+	aria-label={title}
+	style={`view-timeline: --sheet-${index} block; --next-timeline: --sheet-${index + 1}`}
+	class:list={[
+		'sheet mx-3 flex max-w-[66rem] flex-col bg-white px-6 py-6 sm:mx-6 sm:px-12 sm:py-10 lg:px-16 lg:py-12',
+		size === 'page' && 'aspect-[1/1.414]',
+		size === 'screen' && 'min-h-[calc(100svh-8vh-2rem)]'
+	]}
+>
+	<header
+		class='label flex items-baseline justify-between gap-6 border-b border-neutral-200 pb-4'
+	>
+		<span>
+			{section && <span class='text-neutral-900'>{section}</span>}
+			{section && <span class='mx-2'>·</span>}
+			{title}
+		</span>
+
+		<span class='text-right'>{aside}</span>
+	</header>
+
+	<div class='flex flex-1 flex-col gap-14 py-14 lg:gap-20 lg:py-20'>
+		<slot />
+	</div>
+
+	<footer
+		class='label flex items-baseline justify-between gap-6 border-t border-neutral-200 pt-4'
+	>
+		<span>Portfolio · {new Date().getFullYear()}</span>
+		<span class='tabular-nums'>
+			<span class='text-neutral-900'>{pad(index + 1)}</span> / {pad(total)}
+		</span>
+	</footer>
+</section>

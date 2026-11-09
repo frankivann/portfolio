@@ -1,16 +1,55 @@
 ---
 import Layout from '../layouts/Layout.astro'
-import Projects from '../components/Projects.astro'
-import Footer from '../components/Footer.astro'
-import ScrollProgress from '../components/ScrollProgress.astro'
+import Aside from '../components/Aside.astro'
+// Previous navigation, kept to switch back to: replace <Aside /> with it.
+// import ScrollProgress from '../components/ScrollProgress.astro'
+import Sheet from '../components/Sheet.astro'
+import SheetStack from '../components/SheetStack.astro'
+import Cover from '../components/sheets/Cover.astro'
+import Multibrand from '../components/sheets/Multibrand.astro'
+import PaymentGateway from '../components/sheets/PaymentGateway.astro'
+import { pages } from '../data/pages'
+
+const content = {
+	portada: Cover,
+	multibrand: Multibrand,
+	pasarela: PaymentGateway
+} as const
+
+const updated = new Intl.DateTimeFormat('es', {
+	day: 'numeric',
+	month: 'short',
+	year: 'numeric'
+}).format(new Date())
 ---
 
 <Layout>
-	<ScrollProgress />
+	<!-- Page frame (after recent.design): a centred column bounded by two
+	     hairlines, with the aside in the first track, right next to the sheets.
+	     At its max width the sheets fill the second track exactly. -->
+	<div
+		class='xl:mx-auto xl:grid xl:min-h-svh xl:max-w-[1440px] xl:grid-cols-[220px_minmax(0,1fr)] xl:gap-x-8 xl:border-x xl:border-black/[0.06] xl:px-4'
+	>
+		<Aside />
 
-	<main class='mt-40'>
-		<Projects />
-	</main>
-
-	<Footer />
+		<SheetStack>
+			{
+				pages.map((page, index) => {
+					const Content = content[page.id as keyof typeof content]
+					return (
+						<Sheet
+							{...page}
+							index={index}
+							total={pages.length}
+							aside={
+								page.id === 'portada' ? `Actualizado ${updated}` : undefined
+							}
+						>
+							<Content />
+						</Sheet>
+					)
+				})
+			}
+		</SheetStack>
+	</div>
 </Layout>

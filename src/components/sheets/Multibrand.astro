@@ -1,0 +1,140 @@
+---
+import Figure from '../Figure.astro'
+import MarginNote from '../MarginNote.astro'
+import Row from '../Row.astro'
+
+const brands = [
+	{ name: 'National', ref: 'national', url: 'https://nationalpanama.com' },
+	{ name: 'Alamo', ref: 'alamo', url: 'https://alamopanama.com' },
+	{ name: 'Enterprise', ref: 'enterprise', url: 'https://enterprisepanama.com' }
+]
+
+const facts = [
+	{ term: 'Rol', value: 'Liderazgo técnico' },
+	{ term: 'Alcance', value: 'Arquitectura, sistema de diseño' },
+	{ term: 'Stack', value: 'Nuxt, Vue, TypeScript, Strapi' },
+	{ term: 'Medición', value: 'Tag Manager, Analytics' }
+]
+---
+
+<Row label='Proyecto'>
+	<h2
+		class='text-4xl leading-none font-semibold tracking-[-0.03em] text-neutral-900 sm:text-6xl'
+	>
+		Multibrand
+	</h2>
+	<p class='mt-6 text-lg leading-relaxed text-neutral-600 sm:text-xl'>
+		Una sola lógica de negocio capaz de renderizar tres marcas distintas:{' '}
+		{
+			brands.map((brand, i) => (
+				<Fragment>
+					<a
+						href={brand.url}
+						target='_blank'
+						rel='noopener noreferrer'
+						data-ref={brand.ref}
+						class='ink-link text-neutral-900'
+					>
+						{brand.name}
+					</a>
+					<sup class='font-mono text-[10px] text-neutral-400'>{i + 1}</sup>
+					{i < brands.length - 2 ? ', ' : i === brands.length - 2 ? ' y ' : '.'}
+				</Fragment>
+			))
+		}
+	</p>
+
+	<MarginNote slot='note'>pasa el cursor por las marcas</MarginNote>
+</Row>
+
+<Row label='Ficha'>
+	<dl
+		class='grid grid-cols-2 gap-x-6 gap-y-5 border-y border-neutral-200 py-5 sm:grid-cols-4'
+	>
+		{
+			facts.map((fact) => (
+				<div>
+					<dt class='label'>{fact.term}</dt>
+					<dd class='mt-1 text-[15px] leading-snug text-neutral-900'>
+						{fact.value}
+					</dd>
+				</div>
+			))
+		}
+	</dl>
+</Row>
+
+<Row label='El problema'>
+	<p class='text-[17px] leading-[1.7]'>
+		La empresa operaba con tres marcas, cada una con su propia web. Eso se
+		traducía en demoras para la puesta en producción de funcionalidades
+		compartidas: había que replicar código y ajustar versiones constantemente.
+	</p>
+
+	<MarginNote slot='note'>3 webs, 3 veces el mismo trabajo</MarginNote>
+</Row>
+
+<Row label='La decisión'>
+	<p class='text-[17px] leading-[1.7]'>
+		Lideré el proyecto con un objetivo claro: aumentar la calidad del software.
+		Con una arquitectura robusta, un sistema de diseño y patrones definidos
+		modernicé las tres apps de alquiler de autos sobre una única base.
+	</p>
+</Row>
+
+<Row label='El resultado'>
+	<p class='flex items-baseline gap-4 text-neutral-900'>
+		<span
+			class='text-7xl leading-none font-semibold tracking-[-0.05em] tabular-nums sm:text-8xl'
+		>
+			40%
+		</span>
+		<span class='max-w-[16ch] text-lg leading-snug text-neutral-600'>
+			más velocidad en la entrega de funcionalidades
+		</span>
+	</p>
+	<p class='mt-6 text-[17px] leading-[1.7]'>
+		Mitigar esas demoras era uno de los objetivos principales, y se cumplió.
+		Buenas convenciones y una base compartida aceleraron la puesta en producción
+		y la entrega de valor.
+	</p>
+</Row>
+
+<Row wide>
+	<div class='grid gap-6 sm:grid-cols-3'>
+		{
+			brands.map((brand, i) => (
+				<Figure
+					n={i + 1}
+					caption={brand.name}
+					ref={brand.ref}
+				/>
+			))
+		}
+	</div>
+</Row>
+
+<Row label='Testimonio'>
+	<blockquote>
+		<p
+			class='-indent-[0.45em] text-xl leading-snug text-neutral-900 sm:text-2xl'
+		>
+			“Desde la puesta en producción de la multibrand las conversiones han
+			aumentado.”
+		</p>
+		<footer class='label mt-4'>— Gerente de Mercadeo</footer>
+	</blockquote>
+</Row>
+
+<Row label='SEO + Performance'>
+	<p class='text-[17px] leading-[1.7]'>
+		Google Tag Manager y Google Analytics para medir conversiones por marca.
+	</p>
+	<div class='mt-8'>
+		<Figure
+			n={4}
+			caption='Google Tag Manager'
+			ratio='16 / 9'
+		/>
+	</div>
+</Row>

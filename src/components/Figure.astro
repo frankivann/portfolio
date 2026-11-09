@@ -1,0 +1,53 @@
+---
+interface Props {
+	n: number
+	caption: string
+	/** Matches a `data-ref` in the text: hovering either one lights up the other. */
+	ref?: string
+	ratio?: string
+}
+
+const { n, caption, ref, ratio = '4 / 3' } = Astro.props
+---
+
+<figure
+	class='figure'
+	data-fig={ref}
+>
+	<div
+		class='plate w-full'
+		style={`aspect-ratio: ${ratio}`}
+	>
+		<slot />
+	</div>
+	<figcaption class='label mt-3'>
+		<span class='text-neutral-600'>Fig. {n}</span> — {caption}
+	</figcaption>
+</figure>
+
+<script>
+	// Cross-references: a word in the text and the figure it points to light up
+	// together. Paper can only say "see fig. 1"; the screen can show it.
+	document.querySelectorAll<HTMLElement>('[data-ref]').forEach((ref) => {
+		const fig = document.querySelector<HTMLElement>(
+			`[data-fig="${ref.dataset.ref}"]`
+		)
+		if (!fig) return
+
+		const on = () => {
+			fig.classList.add('is-referenced')
+			ref.classList.add('is-active')
+		}
+		const off = () => {
+			fig.classList.remove('is-referenced')
+			ref.classList.remove('is-active')
+		}
+
+		for (const el of [ref, fig]) {
+			el.addEventListener('pointerenter', on)
+			el.addEventListener('pointerleave', off)
+		}
+		ref.addEventListener('focus', on)
+		ref.addEventListener('blur', off)
+	})
+</script>

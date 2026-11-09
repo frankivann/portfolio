@@ -1,0 +1,55 @@
+---
+import Figure from '../Figure.astro'
+import MarginNote from '../MarginNote.astro'
+import Row from '../Row.astro'
+
+// Draft: the copy for this project is still to be written.
+const facts = [
+	{ term: 'Rol', value: '—' },
+	{ term: 'Alcance', value: '—' },
+	{ term: 'Stack', value: 'Laravel, PHP, Vue, TypeScript' },
+	{ term: 'Año', value: '—' }
+]
+---
+
+<Row label='Proyecto'>
+	<h2 class='text-4xl leading-none font-semibold tracking-[-0.03em] text-neutral-900 sm:text-6xl'>
+		Pasarela de pagos
+	</h2>
+	<p class='mt-6 text-lg leading-relaxed text-neutral-400 sm:text-xl'>
+		Resumen del proyecto en una frase.
+	</p>
+
+	<MarginNote slot='note'>borrador — falta el texto</MarginNote>
+</Row>
+
+<Row label='Ficha'>
+	<dl class='grid grid-cols-2 gap-x-6 gap-y-5 border-y border-neutral-200 py-5 sm:grid-cols-4'>
+		{
+			facts.map((fact) => (
+				<div>
+					<dt class='label'>{fact.term}</dt>
+					<dd class='mt-1 text-[15px] leading-snug text-neutral-900'>{fact.value}</dd>
+				</div>
+			))
+		}
+	</dl>
+</Row>
+
+<Row label='El problema'>
+	<p class='text-[17px] leading-[1.7] text-neutral-400'>Contexto y problema.</p>
+</Row>
+
+<Row label='La decisión'>
+	<p class='text-[17px] leading-[1.7] text-neutral-400'>
+		Qué decidiste y por qué.
+	</p>
+</Row>
+
+<Row wide>
+	<Figure
+		n={5}
+		caption='Flujo de pago'
+		ratio='16 / 9'
+	/>
+</Row>

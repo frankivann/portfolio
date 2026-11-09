@@ -1,0 +1,33 @@
+---
+// One line of the document grid: meta margin · reading column · notes margin.
+interface Props {
+	/** Mono label in the left margin. */
+	label?: string
+	/** Let the content run across the reading column and the notes margin. */
+	wide?: boolean
+	class?: string
+}
+
+const { label, wide = false, class: className } = Astro.props
+const hasNote = Astro.slots.has('note')
+const hasMeta = Astro.slots.has('meta')
+---
+
+<div class:list={['doc-row', className]}>
+	<div class='label lg:pt-[0.35em]'>
+		{label}
+		{hasMeta && <slot name='meta' />}
+	</div>
+
+	<div class:list={['min-w-0', wide && 'lg:col-span-2']}>
+		<slot />
+	</div>
+
+	{
+		!wide && (
+			<div class='relative hidden lg:block'>
+				{hasNote && <slot name='note' />}
+			</div>
+		)
+	}
+</div>

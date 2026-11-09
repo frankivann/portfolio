@@ -1,5 +1,4 @@
 ---
-import Header from '../components/Header.astro'
 import '../styles/global.css'
 
 interface Props {
@@ -32,7 +31,11 @@ const { title = 'Franklin Alvarado — Full Stack Web Developer' } = Astro.props
 		/>
 		<title>{title}</title>
 		<!-- Trial fonts via Fontsource CDN (jsDelivr) — not installed as a dependency yet.
-		     Geist = headings, Manrope = body/descriptions. -->
+		     Geist = text, Geist Mono = document apparatus, Kalam = margin notes. -->
+		<link
+			rel='stylesheet'
+			href='https://cdn.jsdelivr.net/npm/@fontsource/geist@5/400.css'
+		/>
 		<link
 			rel='stylesheet'
 			href='https://cdn.jsdelivr.net/npm/@fontsource/geist@5/500.css'
@@ -43,28 +46,14 @@ const { title = 'Franklin Alvarado — Full Stack Web Developer' } = Astro.props
 		/>
 		<link
 			rel='stylesheet'
-			href='https://cdn.jsdelivr.net/npm/@fontsource/geist@5/700.css'
-		/>
-		<link
-			rel='stylesheet'
-			href='https://cdn.jsdelivr.net/npm/@fontsource/manrope@5/400.css'
-		/>
-		<link
-			rel='stylesheet'
-			href='https://cdn.jsdelivr.net/npm/@fontsource/manrope@5/500.css'
+			href='https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/400.css'
 		/>
 		<link
 			rel='stylesheet'
 			href='https://cdn.jsdelivr.net/npm/@fontsource/kalam@5/400.css'
 		/>
-		<link
-			rel='stylesheet'
-			href='https://cdn.jsdelivr.net/npm/@fontsource/kalam@5/700.css'
-		/>
 	</head>
 	<body>
-		<Header />
-
 		<slot />
 	</body>
 </html>

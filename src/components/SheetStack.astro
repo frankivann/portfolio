@@ -1,0 +1,93 @@
+---
+import { pages } from '../data/pages'
+
+// The pile. Sheets are sticky: each one is read in full, then pinned while the
+// next slides over it. The covered sheet recedes a little and takes a shade —
+// the only depth cue on the page.
+
+// Each sheet names its own view timeline; the previous sheet animates on it.
+// Siblings can only see each other's timelines through a shared scope.
+const scope = pages.map((_, i) => `--sheet-${i}`).join(', ')
+---
+
+<main
+	id='stack'
+	class='min-w-0 pt-[8vh] pb-[14vh]'
+	style={`timeline-scope: ${scope}`}
+>
+	<slot />
+</main>
+
+<script>
+	import { STICK_GAP, getSheets, goToSheet } from '../scripts/stack'
+
+	const sheets = getSheets()
+	const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
+	const nativeTimeline = CSS.supports('animation-timeline', 'view()')
+	let frame: number | null = null
+
+	// A reload always starts on the cover, never where the last visit left off.
+	history.scrollRestoration = 'manual'
+	if (location.hash) history.replaceState(null, '', location.pathname)
+	scrollTo(0, 0)
+
+	function layout() {
+		const vh = innerHeight
+
+		for (const sheet of sheets) {
+			// Short sheets pin near the top; tall ones once their bottom is in view.
+			const stick = `${Math.min(STICK_GAP, vh - sheet.offsetHeight - STICK_GAP)}px`
+			// Only touch styles when the value actually changes: every write
+			// invalidates style for the sheet and its whole subtree.
+			if (sheet.style.getPropertyValue('--stick') === stick) continue
+			sheet.style.setProperty('--stick', stick)
+			// Recede around the centre of what is visible, not of the whole sheet.
+			sheet.style.setProperty('--origin', `${vh / 2 - parseFloat(stick)}px`)
+		}
+
+		update()
+	}
+
+	// Fallback only, for browsers without scroll-driven animations.
+	function update() {
+		frame = null
+		if (reduceMotion || nativeTimeline) return
+
+		const vh = innerHeight
+
+		sheets.forEach((sheet, i) => {
+			const next = sheets[i + 1]
+			if (!next) return
+
+			const top = next.getBoundingClientRect().top
+			const covered = Math.min(1, Math.max(0, (vh - top) / (vh - STICK_GAP)))
+			sheet.style.setProperty('--covered', covered.toFixed(3))
+		})
+	}
+
+	if (!nativeTimeline) {
+		addEventListener(
+			'scroll',
+			() => {
+				frame ??= requestAnimationFrame(update)
+			},
+			{ passive: true }
+		)
+	}
+	addEventListener('resize', layout)
+
+	// Fonts and images change sheet heights after first paint.
+	const observer = new ResizeObserver(layout)
+	sheets.forEach((sheet) => observer.observe(sheet))
+
+	// Anchors into a sticky stack would land on the pinned position; route them
+	// through the computed arrivals instead.
+	document.addEventListener('click', (event) => {
+		const link = (event.target as HTMLElement).closest<HTMLElement>('[data-goto]')
+		if (!link) return
+		event.preventDefault()
+		goToSheet(link.dataset.goto!)
+	})
+
+	layout()
+</script>

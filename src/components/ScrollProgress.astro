@@ -1,65 +1,92 @@
 ---
-const TICK_COUNT = 36
-const MAJOR_EVERY = 7
+import { pages } from '../data/pages'
 
-const ticks = Array.from(
-	{ length: TICK_COUNT },
-	(_, i) => i % MAJOR_EVERY === 0
-)
+// A ruler of constant length (as many ticks as before, whatever the number of
+// sheets) with three levels: a major tick per sheet, a mid tick every
+// MID_EVERY and minors in between. The marker lands on a major tick exactly
+// when that sheet arrives, so the ruler reads as pages, not as a percentage.
+const TRACK_TICKS = 36
+const MID_EVERY = 6
+const STEPS = Math.max(MID_EVERY, Math.floor(TRACK_TICKS / Math.max(1, pages.length - 1)))
+
+type Tick = { kind: 'page'; page: (typeof pages)[number]; n: number } | { kind: 'mid' | 'minor' }
+
+const ticks: Tick[] = Array.from({ length: (pages.length - 1) * STEPS + 1 }, (_, i) => {
+	if (i % STEPS === 0) return { kind: 'page', page: pages[i / STEPS], n: i / STEPS + 1 }
+	return { kind: i % MID_EVERY === 0 ? 'mid' : 'minor' }
+})
 ---
 
-<div
+<nav
 	id='scroll-progress'
-	class='pointer-events-none fixed top-1/2 left-0 z-40 hidden -translate-y-1/2 opacity-0 transition-opacity duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] lg:block'
-	aria-hidden='true'
+	aria-label='Hojas'
+	class='pointer-events-none fixed top-1/2 left-0 z-40 hidden -translate-y-1/2 xl:block'
+	data-steps={STEPS}
 >
-	<div class='relative mx-8 flex flex-col gap-2'>
+	<div class='relative ml-8 flex flex-col gap-2'>
 		{
-			ticks.map((isMajor) => (
-				<span
-					class:list={[
-						'tick block h-px origin-left',
-						isMajor
-							? 'is-major w-10 bg-neutral-900'
-							: 'w-6 bg-neutral-400'
-					]}
-				/>
-			))
+			ticks.map((tick) =>
+				tick.kind === 'page' ? (
+					<span class='tick is-major relative block h-px w-10 origin-left bg-neutral-900'>
+						<a
+							href={`#${tick.page.id}`}
+							data-goto={tick.page.id}
+							class='page-label group pointer-events-auto absolute top-0 left-14 flex h-px items-center gap-2.5 whitespace-nowrap'
+						>
+							<span class='label leading-none text-neutral-500 tabular-nums transition-colors duration-300 group-hover:text-neutral-900 group-[.is-current]:text-primary'>
+								{String(tick.n).padStart(2, '0')}
+							</span>
+							<span class='label hidden -translate-x-1 leading-none text-neutral-900 opacity-0 transition-[opacity,translate] duration-500 ease-(--ease-out-expo) group-hover:translate-x-0 group-hover:opacity-100 group-[.is-current]:translate-x-0 group-[.is-current]:opacity-100 min-[1400px]:inline'>
+								{tick.page.short}
+							</span>
+						</a>
+					</span>
+				) : tick.kind === 'mid' ? (
+					<span class='tick block h-px w-8 origin-left bg-neutral-500' />
+				) : (
+					<span class='tick block h-px w-6 origin-left bg-neutral-300' />
+				)
+			)
 		}
 
 		<span
 			id='progress-marker'
-			class='bg-primary absolute top-0 left-0 block h-px w-10 will-change-transform'
+			class='absolute top-0 left-0 block h-px w-10 bg-primary will-change-transform'
 		></span>
 
 		<svg
 			id='progress-arrow'
-			class='text-primary absolute top-0 -left-4 block h-2.5 w-2 will-change-transform'
+			class='absolute top-0 -left-4 block h-2.5 w-2 text-primary will-change-transform'
 			viewBox='0 0 8 10'
 			fill='currentColor'
+			aria-hidden='true'
 		>
 			<path d='M0 0 L8 5 L0 10 Z'></path>
 		</svg>
 	</div>
-</div>
+</nav>
 
 <script>
+	import { getArrivals, getSheets } from '../scripts/stack'
+
 	const root = document.getElementById('scroll-progress')
-	const sheet = document.getElementById('sheet')
 	const marker = document.getElementById('progress-marker')
 	const arrow = document.getElementById('progress-arrow')
 	const ticks = Array.from(document.querySelectorAll<HTMLElement>('.tick'))
+	const labels = Array.from(document.querySelectorAll<HTMLElement>('.page-label'))
+	const sheets = getSheets()
 
-	if (root && sheet && marker && arrow && ticks.length) {
+	if (root && marker && arrow && ticks.length && sheets.length) {
+		const STEPS = Number(root.dataset.steps)
+
 		// 1px tick + 8px gap (gap-2)
 		const STEP = 9
-		const TRACK = (ticks.length - 1) * STEP
 
 		// The arrow is 10px tall and has to sit centred on a 1px tick.
 		const ARROW_OFFSET = -4.5
 
-		// Minor ticks are 24px and stretch up to 30px as the marker passes them.
-		const MINOR_MAX_SCALE = 30 / 24
+		// Non-major ticks stretch by up to 6px as the marker passes them.
+		const STRETCH = 6
 		const BOOST_REACH = 3.5
 
 		// Critically damped spring: the marker carries weight but never bounces.
@@ -68,48 +95,53 @@ const ticks = Array.from(
 
 		const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 
+		const widths = ticks.map((tick) => tick.offsetWidth)
+		let arrivals = getArrivals(sheets)
 		let target = 0
 		let current = 0
 		let velocity = 0
 		let frame: number | null = null
 		let lastTime = 0
+		let activePage = -1
 
+		/** Progress in sheets: 1.5 means halfway from the second sheet to the third. */
 		function measure() {
-			const rect = sheet!.getBoundingClientRect()
-			const viewport = window.innerHeight
-			const middle = viewport / 2
+			const y = scrollY
+			const last = arrivals.length - 1
 
-			// The ruler lives at the vertical centre: it starts filling the moment the
-			// top of the sheet crosses that line and completes once the sheet has been
-			// read through — or the page runs out of scroll, whichever comes first.
-			const top = rect.top + window.scrollY
-			const maxScroll = document.documentElement.scrollHeight - viewport
-			const start = Math.max(0, top - middle)
-			const end = Math.max(
-				start + 1,
-				Math.min(top + rect.height - viewport, maxScroll)
-			)
+			if (y >= arrivals[last]) return last
 
-			root!.style.opacity =
-				window.scrollY >= start && rect.bottom > 0 ? '1' : '0'
+			for (let i = 0; i < last; i++) {
+				const from = arrivals[i]
+				const to = arrivals[i + 1]
+				if (y < to) return i + Math.max(0, (y - from) / Math.max(1, to - from))
+			}
 
-			const progress = (window.scrollY - start) / (end - start)
-			return Math.min(1, Math.max(0, progress))
+			return last
 		}
 
-		function paint(progress: number) {
-			const offset = progress * TRACK
-
+		function paint(pageProgress: number) {
+			const offset = pageProgress * STEPS * STEP
 			marker!.style.transform = `translate3d(0, ${offset}px, 0)`
 			arrow!.style.transform = `translate3d(0, ${offset + ARROW_OFFSET}px, 0)`
 
-			const head = progress * (ticks.length - 1)
+			const head = pageProgress * STEPS
 
 			ticks.forEach((tick, i) => {
 				if (tick.classList.contains('is-major')) return
 				const proximity = Math.max(0, 1 - Math.abs(i - head) / BOOST_REACH)
-				const scale = 1 + (MINOR_MAX_SCALE - 1) * proximity
-				tick.style.transform = `scaleX(${scale})`
+				tick.style.transform = `scaleX(${1 + (STRETCH * proximity) / widths[i]})`
+			})
+
+			// A sheet becomes "current" once it covers most of the screen, a little
+			// before its top actually settles.
+			const page = Math.floor(pageProgress + 0.2)
+			if (page === activePage) return
+			activePage = page
+			labels.forEach((label, i) => {
+				label.classList.toggle('is-current', i === page)
+				if (i === page) label.setAttribute('aria-current', 'page')
+				else label.removeAttribute('aria-current')
 			})
 		}
 
@@ -148,8 +180,14 @@ const ticks = Array.from(
 			}
 		}
 
+		function relayout() {
+			arrivals = getArrivals(sheets)
+			onScroll()
+		}
+
 		addEventListener('scroll', onScroll, { passive: true })
-		addEventListener('resize', onScroll)
+		addEventListener('resize', relayout)
+		new ResizeObserver(relayout).observe(document.body)
 
 		// requestAnimationFrame is frozen while the tab is in the background, so the
 		// spring would resume from a stale position. Snap it back on return.

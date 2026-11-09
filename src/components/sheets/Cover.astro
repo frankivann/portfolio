@@ -1,0 +1,72 @@
+---
+import { folio } from '../../data/pages'
+import { tools } from '../../data/tools'
+import Contact from '../Contact.astro'
+import MarginNote from '../MarginNote.astro'
+import Row from '../Row.astro'
+---
+
+<!-- The introduction sits in the optical centre of the sheet, like a title page;
+     the apparatus (tools, folio) settles at the bottom. -->
+<div class='flex flex-1 items-center'>
+	<Row
+		label='Presentación'
+		wide
+		class='w-full'
+	>
+		<h1
+			class='text-5xl leading-[0.95] font-semibold tracking-[-0.04em] text-neutral-900 sm:text-7xl lg:text-[5.25rem]'
+		>
+			Franklin Alvarado
+		</h1>
+		<p
+			class='mt-8 max-w-[40ch] text-lg leading-relaxed text-neutral-600 sm:text-xl'
+		>
+			Full stack web developer. Diseño la arquitectura y maqueto la interfaz que
+			la sostiene.
+		</p>
+		<div class='mt-8'>
+			<Contact inline />
+		</div>
+	</Row>
+</div>
+
+<Row label='Herramientas'>
+	<ul
+		class='grid grid-cols-3 gap-px border border-neutral-200 bg-neutral-200'
+	>
+		{
+			tools.map((tool) => (
+				<li
+					class='group grid grid-cols-[auto_1fr] items-center gap-x-2.5 gap-y-4 bg-white p-3 sm:grid-cols-[auto_1fr_auto]'
+					style={`--brand: ${tool.color}`}
+				>
+					<svg
+						viewBox='0 0 24 24'
+						class='size-4 shrink-0 text-neutral-300 transition-colors duration-500 ease-(--ease-out-expo) group-hover:text-(--brand)'
+						fill='currentColor'
+						aria-hidden='true'
+						set:html={tool.icon}
+					/>
+					<span class='col-span-2 order-3 text-[13px] leading-tight text-neutral-900 sm:order-2 sm:col-span-1 sm:text-[14px]'>
+						{tool.name}
+					</span>
+					<span class='label order-2 flex gap-1.5 justify-self-end leading-none tabular-nums sm:order-3'>
+						{tool.pages.map((page) => (
+							<a
+								href={`#${page}`}
+								data-goto={page}
+								aria-label={`Ver hoja ${folio(page)}`}
+								class='transition-colors hover:text-primary'
+							>
+								{folio(page)}
+							</a>
+						))}
+					</span>
+				</li>
+			))
+		}
+	</ul>
+
+	<MarginNote slot='note'>el número es la hoja donde lo usé</MarginNote>
+</Row>

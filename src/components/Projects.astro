@@ -88,122 +88,124 @@ const paymentGatewayTech = [
 >
 	<div
 		id='sheet'
-		class='relative mx-auto min-h-[170vh] max-w-300 bg-white px-9 py-12 shadow-[0_0_40px_-4px_rgba(0,0,0,0.05)] sm:p-28'
+		class='relative mx-auto min-h-[170vh] max-w-300 bg-white px-9 py-12 text-sm leading-relaxed text-neutral-700 font-medium shadow-[0_0_40px_-4px_rgba(0,0,0,0.05)] sm:p-28 sm:text-xl'
 	>
-		<Annotation
+		<!-- <Annotation
 			label='Proyectos'
 			class='absolute -top-15 right-0 hidden min-[1440px]:block'
-		/>
+		/> -->
 
-		<article>
-			<div class='mt-8'>
-				<h2 class='font-kalam text-4xl font-bold text-neutral-800 sm:text-6xl'>
-					Multibrand
-				</h2>
-
-				<p
-					class='mt-3 text-sm leading-relaxed font-normal text-neutral-800 sm:text-xl'
-				>
-					Una sola lógica de negocio capaz de renderizar 3 marcas distintas: <Fragment
-						set:html={brandsHtml}
-					/>
-				</p>
-
-				<p
-					class='mt-3 text-sm leading-relaxed font-normal text-neutral-800 sm:text-xl'
-				>
-					Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti aut
-					odit laudantium harum voluptatibus molestias facilis minus nulla
-					praesentium deserunt. Temporibus quisquam modi dolorem laboriosam eos
-					atque nesciunt obcaecati labore!
-				</p>
-
-				<div class='grid grid-cols-3 gap-6'>
-					<div class='flex flex-col items-center justify-center gap-4'>
-						<div
-							class='mt-12 flex items-center justify-center w-full h-62 border border-neutral-200 rounded-3xl bg-neutral-50/50'
-						>
-							<img
-								class='h-full object-cover'
-								src=''
-							/>
-						</div>
-
-						<p class='font-medium text-neutral-400'>
-							All footage is rendered by me
-						</p>
-					</div>
-
-					<div class='flex flex-col items-center justify-center gap-4'>
-						<div
-							class='mt-12 flex items-center justify-center w-full h-62 border border-neutral-200 rounded-3xl bg-neutral-50/50'
-						>
-							<img
-								class='h-full object-cover'
-								src=''
-							/>
-						</div>
-
-						<p class='font-medium text-neutral-400'>
-							All footage is rendered by me
-						</p>
-					</div>
-
-					<div class='flex flex-col items-center justify-center gap-4'>
-						<div
-							class='mt-12 flex items-center justify-center w-full h-62 border border-neutral-200 rounded-3xl bg-neutral-50/50'
-						>
-							<img class='h-full object-cover' />
-						</div>
-
-						<p class='font-medium text-neutral-400'>
-							All footage is rendered by me
-						</p>
-					</div>
-				</div>
-
-				<div class='mt-20'>
-					<h3
-						class='font-heading text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl'
+		<article class='flex flex-col gap-20'>
+			<div>
+				<div class='space-y-3'>
+					<div
+						class='flex flex-col items-start gap-3 lg:flex-row lg:items-center'
 					>
-						40% de mejora en velocidad de entrega
-					</h3>
+						<h2
+							class='font-kalam text-neutral-800 text-4xl font-bold sm:text-6xl'
+						>
+							Multibrand
+						</h2>
 
-					<p
-						class='mt-3 text-sm leading-relaxed font-normal text-neutral-800 sm:text-xl'
-					>
-						La empresa operaba con 3 marcas, cada una con su propia web. Eso se
-						traducía en demoras para la puesta en producción de nuevas
-						funcionalidades compartidas por marcas. Requería replicar código y
-						ajustar versiones frecuentemente.
+						<TechStack technologies={multibrandTech} />
+					</div>
+
+					<p>
+						Una sola lógica de negocio capaz de renderizar 3 marcas distintas:
+						<span
+							class='underlinex decoration-primary ml-1 decoration-wavy decoration-3 underline-offset-6'
+						>
+							National, Alamo y Enterprise.
+						</span>
+						<!-- <Fragment
+							set:html={brandsHtml}
+						/> -->
 					</p>
 
-					<p
-						class='mt-3 text-sm leading-relaxed font-normal text-neutral-800 sm:text-xl'
-					>
-						Lideré el proyecto de multibrand con el objetivo de mitigar estas
-						demoras, y fue un éxito. Con una buena arquitectura, buenas
-						prácticas y convenciones se aumentó la velocidad de puesta en
-						producción y entrega de valor.
+					<p>
+						Lideré el proyecto de multibrand con un objetivo claro: Aumentar la
+						calidad del software. Con una arquitectura robusta, un sistema de
+						diseño y patrones definidos logré modernizar las 3 apps de alquiler
+						de autos.
+					</p>
+
+					<p class='leading-relaxed text-neutral-400 italic sm:text-lg'>
+						"Desde la puesta en producción de la multibrand las conversiones han
+						aumentado." - Gerente de Mercadeo.
 					</p>
 				</div>
 
-				<div class='mt-20'>
+				<div class='mt-12 grid gap-6 lg:grid-cols-3'>
+					<div class='flex flex-col items-center justify-center gap-4'>
+						<div
+							class='flex items-center justify-center w-full h-62 border border-neutral-200 rounded-3xl bg-neutral-50/50'
+						>
+						</div>
+
+						<p class='text-sm text-neutral-500'>Imagen de National</p>
+					</div>
+
+					<div class='flex flex-col items-center justify-center gap-4'>
+						<div
+							class='flex items-center justify-center w-full h-62 border border-neutral-200 rounded-3xl bg-neutral-50/50'
+						>
+						</div>
+
+						<p class='text-sm text-neutral-500'>Imagen de Alamo</p>
+					</div>
+
+					<div class='flex flex-col items-center justify-center gap-4'>
+						<div
+							class='flex items-center justify-center w-full h-62 border border-neutral-200 rounded-3xl bg-neutral-50/50'
+						>
+						</div>
+
+						<p class='text-sm text-neutral-500'>Imagen de Enterprise</p>
+					</div>
+				</div>
+			</div>
+
+			<div class='space-y-3'>
+				<h3
+					class='font-heading text-neutral-800 text-2xl font-semibold tracking-tight sm:text-3xl'
+				>
+					40% de mejora en velocidad de entrega
+				</h3>
+
+				<p>
+					La empresa operaba con 3 marcas, cada una con su propia web. Eso se
+					traducía en demoras para la puesta en producción de nuevas
+					funcionalidades compartidas por marcas. Requería replicar código y
+					ajustar versiones frecuentemente.
+				</p>
+
+				<p>
+					Uno de sus objetivos principales era mitigar esas demoras y fue un
+					éxito. Con una buena arquitectura, buenas prácticas y convenciones se
+					aumentó la velocidad de puesta en producción y entrega de valor.
+				</p>
+			</div>
+
+			<div>
+				<div class='space-y-3'>
 					<h3
-						class='font-heading text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl'
+						class='font-heading text-neutral-800 text-2xl font-semibold tracking-tight sm:text-3xl'
 					>
 						SEO + Performance
 					</h3>
-					<p
-						class='mt-3 text-sm leading-relaxed font-normal text-neutral-500 sm:text-xl'
-					>
+
+					<p>
 						Google Tag Manager y Google Analytics para trackear conversiones.
 					</p>
+				</div>
 
+				<div class='mt-12 flex flex-col items-center justify-center gap-4'>
 					<div
-						class='mt-8 aspect-video w-full h-full rounded-3xl bg-neutral-50/50 border border-neutral-200'
+						class='flex items-center justify-center aspect-video w-full border border-neutral-200 rounded-3xl bg-neutral-50/50'
 					>
 					</div>
+
+					<p class='text-sm text-neutral-500'>Imagen de Google Tag Manager</p>
 				</div>
 			</div>
 		</article>

@@ -16,10 +16,10 @@ const { technologies } = Astro.props
 	{
 		technologies.map((tech) => (
 			<div class='group relative hover:z-10'>
-				<div class='flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-white bg-neutral-100 shadow-sm sm:size-9'>
+				<div class='flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-white bg-neutral-100 shadow-sm'>
 					<svg
 						viewBox='0 0 24 24'
-						class='size-4 sm:size-[18px]'
+						class='size-4'
 						fill='currentColor'
 						style={`color: #${tech.color}`}
 						set:html={tech.icon}

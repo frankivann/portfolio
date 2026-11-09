@@ -1,27 +1,202 @@
 @import 'tailwindcss';
 
 @theme {
+	/* One accent, one job: everything that is "alive" on the page — the ruler,
+	   hovered links, referenced figures, the text selection. Never decoration. */
 	--color-primary: #ff6a00;
-	--color-secondary: #2563eb;
 
-	/* Body/UI text. Trial: Manrope (via Fontsource CDN in Layout.astro), falling
-	   back to the system stack if it hasn't loaded yet or gets removed. */
+	/* One superfamily for the printed layer: Geist for text, Geist Mono for the
+	   document apparatus (folios, labels, figure captions, metadata). */
 	--font-sans:
-		'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
 		'Helvetica Neue', Arial, sans-serif;
+	--font-mono:
+		'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-	/* Headings only (applied via the `font-heading` utility). Trial: Geist. */
-	--font-heading:
-		'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-		'Helvetica Neue', Arial, sans-serif;
-
-	/* Project-title accent (applied via the `font-kalam` utility). Trial: Kalam.
-	   Kalam solo trae 300/400/700: no hay 500, así que `font-medium` caería a 400. */
+	/* The hand: margin notes only. If it appears anywhere else it stops meaning
+	   "someone wrote on this page". */
 	--font-kalam: 'Kalam', cursive;
+
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
+	/* Scroll anchoring silently corrects the scroll position when layout above
+	   the viewport changes. Inside a pile of sticky sheets every sheet is "above"
+	   at once, so an anchor correction can fight the user's scroll — most
+	   visibly at the very bottom, where the position is already clamped. Nothing
+	   here loads in above the reader, so there is nothing to anchor. */
+	html {
+		overflow-anchor: none;
+	}
+
 	body {
-		@apply bg-mist-100 text-neutral-900 antialiased;
+		@apply bg-mist-100 text-neutral-700 antialiased;
+		font-feature-settings: 'ss01', 'cv11';
+		text-rendering: optimizeLegibility;
+	}
+
+	::selection {
+		background: color-mix(in oklab, var(--color-primary) 22%, transparent);
+		color: var(--color-neutral-900);
+	}
+}
+
+@layer components {
+	/* ------------------------------------------------------------------ Sheets
+	   Each sheet is sticky. --stick is set by SheetStack: a tall sheet sticks
+	   once its *bottom* reaches the viewport (negative top), so it is read in
+	   full before the next one slides over it.
+
+	   The gap between sheets equals the pin gap (2rem): the next sheet's top
+	   enters the screen at the exact moment the current one pins, so there is
+	   never a stretch of scroll where nothing moves. */
+	.sheet {
+		position: sticky;
+		top: var(--stick, 2rem);
+		transform-origin: 50% var(--origin, 50%);
+		box-shadow:
+			0 1px 1px rgb(0 0 0 / 0.03),
+			0 2px 6px -2px rgb(0 0 0 / 0.04),
+			0 24px 48px -24px rgb(0 0 0 / 0.1);
+	}
+
+	.sheet::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: rgb(20 20 20 / 0.06);
+		opacity: 0;
+	}
+
+	.sheet + .sheet {
+		margin-top: 2rem;
+	}
+
+	/* As the next sheet slides in, the covered one recedes and takes a shade.
+	   Fallback: SheetStack writes --covered (0–1) from JS. */
+	.sheet[data-has-next] {
+		transform: scale(calc(1 - var(--covered, 0) * 0.04));
+	}
+
+	.sheet[data-has-next]::after {
+		opacity: var(--covered, 0);
+	}
+
+	/* Native path: a scroll-driven animation bound to the *next* sheet's view
+	   timeline. It runs on the compositor in lockstep with the scroll, with no
+	   JS and no frame of lag. The range runs from the next sheet's top entering
+	   at the bottom of the screen until it reaches the pin gap at the top. */
+	@supports (animation-timeline: view()) {
+		.sheet[data-has-next],
+		.sheet[data-has-next]::after {
+			animation-timing-function: linear;
+			animation-fill-mode: both;
+			animation-timeline: var(--next-timeline);
+			animation-range: cover 0% cover calc(100vh - 2rem);
+		}
+
+		.sheet[data-has-next] {
+			transform: none;
+			animation-name: sheet-recede;
+		}
+
+		.sheet[data-has-next]::after {
+			animation-name: sheet-shade;
+		}
+	}
+
+	@keyframes sheet-recede {
+		to {
+			transform: scale(0.96);
+		}
+	}
+
+	@keyframes sheet-shade {
+		to {
+			opacity: 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.sheet[data-has-next] {
+			transform: none;
+			animation: none;
+		}
+
+		.sheet[data-has-next]::after {
+			display: none;
+		}
+	}
+
+	/* ------------------------------------------------------------------ Grid
+	   The document grid: a meta margin, a reading column, a notes margin. Below
+	   lg it collapses to one column and the meta label sits above the text. */
+	.doc-row {
+		display: grid;
+		gap: 0.75rem;
+	}
+
+	@media (min-width: 64rem) {
+		.doc-row {
+			grid-template-columns: 8.5rem minmax(0, 1fr) 8.5rem;
+			column-gap: 2.5rem;
+		}
+	}
+
+	.label {
+		@apply font-mono text-[11px] leading-5 font-normal tracking-[0.08em] text-neutral-400 uppercase;
+	}
+
+	/* ------------------------------------------------------------------ Links
+	   A hairline at rest; on hover the accent is drawn over it from the left. */
+	.ink-link {
+		background:
+			linear-gradient(var(--color-primary), var(--color-primary)) 0 100% / 0%
+				1px no-repeat,
+			linear-gradient(var(--color-neutral-300), var(--color-neutral-300)) 0
+				100% / 100% 1px no-repeat;
+		transition:
+			background-size 450ms var(--ease-out-expo),
+			color 200ms;
+	}
+
+	.ink-link:hover,
+	.ink-link:focus-visible,
+	.ink-link.is-active {
+		background-size:
+			100% 1px,
+			100% 1px;
+		color: var(--color-neutral-900);
+	}
+
+	/* ------------------------------------------------------------------ Figures
+	   Plates, not cards: square corners, a hairline, a faint drafting hatch
+	   while the image is pending. */
+	.plate {
+		border: 1px solid var(--color-neutral-200);
+		background-color: var(--color-neutral-50);
+		background-image: repeating-linear-gradient(
+			-45deg,
+			transparent 0 7px,
+			rgb(0 0 0 / 0.025) 7px 8px
+		);
+		transition:
+			border-color 300ms var(--ease-out-expo),
+			box-shadow 300ms var(--ease-out-expo);
+	}
+
+	.figure.is-referenced .plate {
+		border-color: var(--color-primary);
+		box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 12%, transparent);
+	}
+
+	.figure figcaption {
+		transition: color 300ms var(--ease-out-expo);
+	}
+
+	.figure.is-referenced figcaption {
+		color: var(--color-primary);
 	}
 }

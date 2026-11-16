@@ -5,11 +5,11 @@ export interface Page {
 	/** Name on the ruler, where space is tight. */
 	short: string
 	section?: string
-	size?: 'page' | 'screen' | 'note'
+	size?: 'page' | 'screen' | 'note' | 'cover'
 }
 
 export const pages: Page[] = [
-	{ id: 'portada', title: 'Portada', short: 'Portada', size: 'screen' },
+	{ id: 'portada', title: 'Portada', short: 'Portada', size: 'cover' },
 	{ id: 'multibrand', title: 'Multibrand', short: 'Multibrand', section: '01' },
 	{
 		id: 'pasarela',

@@ -1,55 +1,94 @@
 ---
-import Figure from '../Figure.astro'
 import MarginNote from '../MarginNote.astro'
+import PaymentDemo from '../PaymentDemo.astro'
 import Row from '../Row.astro'
+import StackIcons from '../StackIcons.astro'
 
-// Draft: the copy for this project is still to be written.
-const facts = [
-	{ term: 'Rol', value: '—' },
-	{ term: 'Alcance', value: '—' },
-	{ term: 'Stack', value: 'Laravel, PHP, Vue, TypeScript' },
-	{ term: 'Año', value: '—' }
-]
+const stack = ['PHP', 'Laravel', 'Vue', 'TypeScript', 'Strapi', 'Claude']
 ---
 
-<Row label='Proyecto'>
-	<h2 class='text-4xl leading-none font-semibold tracking-[-0.03em] text-neutral-900 sm:text-6xl'>
+<Row>
+	<h2
+		class='text-4xl leading-none font-semibold tracking-[-0.03em] text-neutral-900 sm:text-6xl'
+	>
 		Pasarela de pagos
 	</h2>
-	<p class='mt-6 text-lg leading-relaxed text-neutral-400 sm:text-xl'>
-		Resumen del proyecto en una frase.
+	<p class='mt-6 text-lg leading-relaxed text-neutral-600 sm:text-xl'>
+		Pagos en línea por adelantado con <span
+			data-ref='wompi'
+			class='ink-link cursor-default text-neutral-900'
+			>Wompi</span
+		>, dentro del flujo de reserva.
 	</p>
 
-	<MarginNote slot='note'>borrador — falta el texto</MarginNote>
+	<MarginNote slot='note'>Integración con Multibrand</MarginNote>
 </Row>
 
-<Row label='Ficha'>
-	<dl class='grid grid-cols-2 gap-x-6 gap-y-5 border-y border-neutral-200 py-5 sm:grid-cols-4'>
-		{
-			facts.map((fact) => (
-				<div>
-					<dt class='label'>{fact.term}</dt>
-					<dd class='mt-1 text-[15px] leading-snug text-neutral-900'>{fact.value}</dd>
-				</div>
-			))
-		}
+<Row>
+	<dl
+		class='flex flex-wrap gap-x-10 gap-y-5 border-y sm:gap-x-16 border-neutral-200 py-5'
+	>
+		<div>
+			<dt class='label'>Rol</dt>
+			<dd class='mt-1.5 text-[15px] leading-5 text-neutral-900'>
+				Líder técnico
+			</dd>
+		</div>
+
+		<div>
+			<dt class='label'>Tiempo</dt>
+			<dd class='mt-1.5 text-[15px] leading-5 text-neutral-900'>2 meses</dd>
+		</div>
+
+		<div>
+			<dt class='label'>Stack</dt>
+			<dd class='mt-1.5'>
+				<StackIcons names={stack} />
+			</dd>
+		</div>
 	</dl>
 </Row>
 
-<Row label='El problema'>
-	<p class='text-[17px] leading-[1.7] text-neutral-400'>Contexto y problema.</p>
+<Row>
+	<p class='text-[17px] leading-[1.7]'>
+		<!-- Algunos clientes pedían un medio digital para pagar el alquiler de sus
+		autos. -->
+		<span class='font-medium text-neutral-900 underline underline-offset-4'
+			>El problema:</span
+		> La empresa necesitaba modernizar los canales principales con algún medio que
+		le permitiera recibir transacciones por adelantado.
+	</p>
+
+	<MarginNote slot='note'>Automatización de pagos digitales</MarginNote>
 </Row>
 
-<Row label='La decisión'>
-	<p class='text-[17px] leading-[1.7] text-neutral-400'>
-		Qué decidiste y por qué.
+<Row>
+	<p class='text-[17px] leading-[1.7]'>
+		<span class='font-medium text-neutral-900 underline underline-offset-4'
+			>La decisión:</span
+		> Lideré la integración de Wompi como pasarela de pagos y la incorporé al flujo
+		principal del negocio: las reservas.
 	</p>
 </Row>
 
-<Row wide>
-	<Figure
-		n={5}
-		caption='Flujo de pago'
-		ratio='16 / 9'
-	/>
+<Row>
+	<p
+		class='flex flex-col gap-3 text-neutral-900 sm:flex-row sm:items-center sm:gap-6'
+	>
+		<span
+			class='shrink-0 text-7xl leading-none font-semibold tracking-[-0.05em] tabular-nums sm:text-8xl'
+		>
+			×3
+		</span>
+		<span
+			class='max-w-[26ch] text-lg leading-snug text-balance text-neutral-600'
+		>
+			pagos por adelantado y más flujo de caja para el negocio
+		</span>
+	</p>
 </Row>
+
+<PaymentDemo
+	n={1}
+	ref='wompi'
+/>

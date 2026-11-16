@@ -4,6 +4,7 @@ interface Props {
 	caption: string
 	/** Matches a `data-ref` in the text: hovering either one lights up the other. */
 	ref?: string
+	/** CSS aspect-ratio of the plate; "auto" lets the content set the height. */
 	ratio?: string
 }
 
@@ -16,7 +17,7 @@ const { n, caption, ref, ratio = '4 / 3' } = Astro.props
 >
 	<div
 		class='plate w-full'
-		style={`aspect-ratio: ${ratio}`}
+		style={ratio === 'auto' ? undefined : `aspect-ratio: ${ratio}`}
 	>
 		<slot />
 	</div>

@@ -8,36 +8,46 @@ interface Props {
 const { class: className } = Astro.props
 ---
 
+<!-- The tilt lives inside a layer that stays straight. Over the animated sheets
+     Chrome may promote a note to its own GPU layer; if that layer is the tilted
+     one, the GPU rotates a bitmap and the text goes soft. Here the layer is
+     upright and the tilted text is drawn into it as vectors, so it stays sharp. -->
 <div
-	class:list={['margin-note relative -rotate-2 pl-1 text-neutral-500', className]}
+	class:list={['note-layer', className]}
 	aria-hidden='true'
 >
-	<svg
-		class='absolute top-1 -left-9 h-6 w-8 overflow-visible'
-		viewBox='0 0 32 24'
-		fill='none'
-		stroke='currentColor'
-		stroke-width='1.4'
-		stroke-linecap='round'
-		stroke-linejoin='round'
-	>
-		<path
-			class='note-stroke'
-			pathLength='1'
-			d='M30 14 C22 4 12 3 3 9'
-		></path>
-		<path
-			class='note-stroke note-head'
-			pathLength='1'
-			d='M8 3.5 L3 9 L10 10.5'
-		></path>
-	</svg>
-	<p class='font-kalam text-[17px] leading-snug'>
-		<slot />
-	</p>
+	<div class='margin-note relative -rotate-2 pl-1 text-neutral-500'>
+		<svg
+			class='absolute top-1 -left-9 h-6 w-8 overflow-visible'
+			viewBox='0 0 32 24'
+			fill='none'
+			stroke='currentColor'
+			stroke-width='1.4'
+			stroke-linecap='round'
+			stroke-linejoin='round'
+		>
+			<path
+				class='note-stroke'
+				pathLength='1'
+				d='M30 14 C22 4 12 3 3 9'
+			></path>
+			<path
+				class='note-stroke note-head'
+				pathLength='1'
+				d='M8 3.5 L3 9 L10 10.5'
+			></path>
+		</svg>
+		<p class='font-kalam text-[17px] leading-snug'>
+			<slot />
+		</p>
+	</div>
 </div>
 
 <style>
+	.note-layer {
+		will-change: transform;
+	}
+
 	.note-stroke {
 		stroke-dasharray: 1;
 		stroke-dashoffset: 1;
@@ -91,7 +101,7 @@ const { class: className } = Astro.props
 				observer.unobserve(entry.target)
 			}
 		},
-		{ rootMargin: '0px 0px -25% 0px' }
+		{ rootMargin: '0px 0px -8% 0px' }
 	)
 
 	document

@@ -1,0 +1,34 @@
+---
+// Stack as icons: the one spot of colour on a project sheet. Names stay for
+// screen readers and appear on hover.
+import { tools } from '../data/tools'
+
+interface Props {
+	names: string[]
+}
+
+const stack = Astro.props.names.map((name) =>
+	tools.find((tool) => tool.name === name)!
+)
+---
+
+<ul class='flex items-center gap-3.5'>
+	{
+		stack.map((tool) => (
+			<li class='group relative'>
+				<svg
+					viewBox='0 0 24 24'
+					class='size-5'
+					fill='currentColor'
+					style={`color: ${tool.color}`}
+					aria-hidden='true'
+					set:html={tool.icon}
+				/>
+				<span class='label pointer-events-none absolute top-full left-1/2 mt-2 -translate-x-1/2 translate-y-1 whitespace-nowrap text-neutral-700 opacity-0 transition-[opacity,translate] duration-300 ease-out-expo group-hover:translate-y-0 group-hover:opacity-100'>
+					{tool.name}
+				</span>
+				<span class='sr-only'>{tool.name}</span>
+			</li>
+		))
+	}
+</ul>

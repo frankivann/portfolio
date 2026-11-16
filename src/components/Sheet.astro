@@ -11,9 +11,13 @@ interface Props {
 	/**
 	 * "page" keeps an A-series proportion; "screen" fits the viewport exactly
 	 * (a sheet cut to your screen — something paper can't do); "note" is as
-	 * tall as its content.
+	 * tall as its content; "cover" is a gentle portrait (1:1.1) — never squat —
+	 * that never drops below the screen height.
 	 */
-	size?: 'page' | 'screen' | 'note'
+	// "cover" applies its ratio only from lg: combined with a min-height,
+	// aspect-ratio turns that height into a minimum *width* as well, which
+	// overflows small screens.
+	size?: 'page' | 'screen' | 'note' | 'cover'
 }
 
 const {
@@ -38,7 +42,8 @@ const pad = (n: number) => String(n).padStart(2, '0')
 	class:list={[
 		'sheet mx-3 flex max-w-[66rem] flex-col bg-white px-6 py-6 sm:mx-6 sm:px-12 sm:py-10 lg:px-16 lg:py-12',
 		size === 'page' && 'aspect-[1/1.414]',
-		size === 'screen' && 'min-h-[calc(100svh-8vh-2rem)]'
+		size === 'screen' && 'min-h-[calc(100svh-8vh-2rem)]',
+		size === 'cover' && 'min-h-[calc(100svh-8vh-2rem)] lg:aspect-square'
 	]}
 >
 	<header
@@ -53,7 +58,14 @@ const pad = (n: number) => String(n).padStart(2, '0')
 		<span class='text-right'>{aside}</span>
 	</header>
 
-	<div class='flex flex-1 flex-col gap-14 py-14 lg:gap-20 lg:py-20'>
+	<!-- A content sheet closes with more air than it opens: the next sheet slides
+	     in over its last lines, so they need room before the folio. -->
+	<div
+		class:list={[
+			'flex flex-1 flex-col gap-14 pt-14 lg:gap-20 lg:pt-20',
+			size === 'cover' ? 'pb-14 lg:pb-20' : 'pb-28 lg:pb-40'
+		]}
+	>
 		<slot />
 	</div>
 

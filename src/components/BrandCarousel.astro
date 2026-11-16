@@ -1,0 +1,170 @@
+---
+// Kept for later — not used right now. The Multibrand figure row: the same
+// screen in each brand, side by side, so only the skin changes.
+//
+// Usage: <BrandCarousel brands={brands} /> inside a sheet. Each brand needs
+// /multibrand/{ref}@{1x,1.25x,1.5x,2x,3x}.webp in public/.
+//
+// The chosen coverage plan (/reserve/coverages), from the vehicle down to the
+// selected button — no app header or stepper, which differ between brands.
+// Pixel-exact: the page lays out at 360px (a real phone) and is
+// rasterised by Chrome straight at 288px × each screen density, so the browser
+// shows every pixel as captured — no resampling, no blur. Shown at 288px only.
+import Figure from './Figure.astro'
+import Row from './Row.astro'
+
+interface Props {
+	brands: { name: string; ref: string }[]
+}
+
+const { brands } = Astro.props
+
+const densities = ['1x', '1.25x', '1.5x', '2x', '3x']
+const shot = (ref: string) =>
+	densities.map((d) => `/multibrand/${ref}@${d}.webp ${d}`).join(', ')
+---
+
+<!-- Same screen, same crop, three brands: only the skin changes. The plates keep
+     their exact 288px (shrinking is what blurs), so the row stays inside the grid
+     and slides sideways: arrows above it, drag, swipe or trackpad. The
+     captures stay still: the point is that they are the same. -->
+<Row wide>
+	<div
+		slot='meta'
+		class='hidden gap-1 lg:flex'
+	>
+		<button
+			type='button'
+			data-carousel-prev
+			class='label grid size-7 place-items-center rounded-full border border-neutral-200 transition-colors hover:border-neutral-400 hover:text-neutral-900 disabled:pointer-events-none disabled:opacity-40'
+			aria-label='Figura anterior'
+		>
+			←
+		</button>
+		<button
+			type='button'
+			data-carousel-next
+			class='label grid size-7 place-items-center rounded-full border border-neutral-200 transition-colors hover:border-neutral-400 hover:text-neutral-900 disabled:pointer-events-none disabled:opacity-40'
+			aria-label='Figura siguiente'
+		>
+			→
+		</button>
+	</div>
+
+	<div
+		data-carousel
+		class='-mx-6 grid snap-x snap-mandatory scroll-px-6 auto-cols-[290px] grid-flow-col gap-4 overflow-x-auto px-6 py-1 scrollbar-none sm:-mx-12 sm:scroll-px-12 sm:px-12 lg:-mx-1 lg:scroll-px-1 lg:px-1 lg:cursor-grab [&::-webkit-scrollbar]:hidden'
+	>
+		{
+			brands.map((brand, i) => (
+				<div class='snap-start'>
+					<Figure
+						n={i + 1}
+						caption={brand.name}
+						ref={brand.ref}
+						ratio='290 / 532'
+					>
+						<img
+							src={`/multibrand/${brand.ref}@1x.webp`}
+							srcset={shot(brand.ref)}
+							width='288'
+							height='530'
+							alt={`Plan de cobertura seleccionado en ${brand.name} para un Toyota Land Cruiser Prado, versión móvil`}
+							loading='lazy'
+							decoding='async'
+							draggable='false'
+							class='shot'
+						/>
+					</Figure>
+				</div>
+			))
+		}
+	</div>
+</Row>
+
+<script>
+	// The figure row: arrows step one plate, a mouse can drag it, and naming a
+	// brand in the text slides its plate into view. Swipe and trackpad are native.
+	const row = document.querySelector<HTMLElement>('[data-carousel]')
+	const prev = document.querySelector<HTMLButtonElement>('[data-carousel-prev]')
+	const next = document.querySelector<HTMLButtonElement>('[data-carousel-next]')
+
+	if (row && prev && next) {
+		const step = () => {
+			const [a, b] = row.children
+			return b
+				? b.getBoundingClientRect().left - a.getBoundingClientRect().left
+				: 0
+		}
+		const update = () => {
+			prev.disabled = row.scrollLeft <= 1
+			next.disabled = row.scrollLeft >= row.scrollWidth - row.clientWidth - 1
+		}
+
+		prev.addEventListener('click', () =>
+			row.scrollBy({ left: -step(), behavior: 'smooth' })
+		)
+		next.addEventListener('click', () =>
+			row.scrollBy({ left: step(), behavior: 'smooth' })
+		)
+		row.addEventListener('scroll', update, { passive: true })
+		addEventListener('resize', update)
+		update()
+
+		// Mouse drag. Snapping is paused while dragging, then restored so the row
+		// settles on the nearest plate.
+		let startX = 0
+		let startLeft = 0
+		let dragged = false
+		row.addEventListener('pointerdown', (e) => {
+			if (e.pointerType !== 'mouse' || e.button !== 0) return
+			startX = e.clientX
+			startLeft = row.scrollLeft
+			dragged = false
+			row.setPointerCapture(e.pointerId)
+			row.style.scrollSnapType = 'none'
+			row.style.cursor = 'grabbing'
+		})
+		row.addEventListener('pointermove', (e) => {
+			if (!row.hasPointerCapture(e.pointerId)) return
+			const dx = e.clientX - startX
+			if (Math.abs(dx) > 3) dragged = true
+			row.scrollLeft = startLeft - dx
+		})
+		const release = (e: PointerEvent) => {
+			if (!row.hasPointerCapture(e.pointerId)) return
+			row.releasePointerCapture(e.pointerId)
+			row.style.cursor = ''
+			const left = row.scrollLeft
+			row.style.scrollSnapType = ''
+			row.scrollLeft = left
+			const s = step()
+			if (s)
+				row.scrollTo({ left: Math.round(left / s) * s, behavior: 'smooth' })
+		}
+		row.addEventListener('pointerup', release)
+		row.addEventListener('pointercancel', release)
+		row.addEventListener('click', (e) => dragged && e.preventDefault(), true)
+
+		// "National" in the text → its plate slides in (horizontally only).
+		document.querySelectorAll<HTMLElement>('[data-ref]').forEach((ref) => {
+			const fig = row.querySelector<HTMLElement>(
+				`[data-fig="${ref.dataset.ref}"]`
+			)
+			const cell = fig?.parentElement
+			if (!cell) return
+			ref.addEventListener('pointerenter', () => {
+				const offset =
+					cell.getBoundingClientRect().left -
+					row.firstElementChild!.getBoundingClientRect().left
+				row.scrollTo({
+					left: Math.max(
+						0,
+						Math.min(offset, row.scrollWidth - row.clientWidth)
+					),
+					behavior: 'smooth'
+				})
+			})
+		})
+	}
+</script>

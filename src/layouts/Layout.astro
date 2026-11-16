@@ -1,11 +1,37 @@
 ---
+import { Font } from 'astro:assets'
 import '../styles/global.css'
 
 interface Props {
 	title?: string
+	description?: string
 }
 
-const { title = 'Franklin Alvarado — Full Stack Web Developer' } = Astro.props
+const {
+	title = 'Franklin Alvarado',
+	description = 'Tech Lead y Full Stack Web Developer con +5 años de experiencia. Proyectos reales con impacto medible: Multibrand y pasarela de pagos.'
+} = Astro.props
+
+// Absolute URLs: share cards and crawlers can't resolve relative ones.
+const canonical = new URL(Astro.url.pathname, Astro.site)
+const image = new URL('/og.png', Astro.site)
+const imageAlt =
+	'Portada del portfolio de Franklin Alvarado: Tech Lead · Full Stack Web Developer.'
+
+// Who the site is about, for search engines: the name a recruiter types.
+const person = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: 'Franklin Alvarado',
+	url: canonical.href,
+	image: image.href,
+	jobTitle: 'Tech Lead · Full Stack Web Developer',
+	description,
+	sameAs: [
+		'https://github.com/frankivann',
+		'https://www.linkedin.com/in/frankalvarado/'
+	]
+}
 ---
 
 <!doctype html>
@@ -16,6 +42,103 @@ const { title = 'Franklin Alvarado — Full Stack Web Developer' } = Astro.props
 			name='viewport'
 			content='width=device-width'
 		/>
+		<title>{title}</title>
+		<meta
+			name='description'
+			content={description}
+		/>
+		<link
+			rel='canonical'
+			href={canonical}
+		/>
+		<meta
+			name='author'
+			content='Franklin Alvarado'
+		/>
+		<meta
+			name='theme-color'
+			content='#f1f3f3'
+		/>
+
+		<!-- Share card: LinkedIn, Slack, WhatsApp, X… -->
+		<meta
+			property='og:type'
+			content='profile'
+		/>
+		<meta
+			property='profile:first_name'
+			content='Franklin'
+		/>
+		<meta
+			property='profile:last_name'
+			content='Alvarado'
+		/>
+		<meta
+			property='og:site_name'
+			content='Franklin Alvarado'
+		/>
+		<meta
+			property='og:locale'
+			content='es_ES'
+		/>
+		<meta
+			property='og:url'
+			content={canonical}
+		/>
+		<meta
+			property='og:title'
+			content={title}
+		/>
+		<meta
+			property='og:description'
+			content={description}
+		/>
+		<meta
+			property='og:image'
+			content={image}
+		/>
+		<meta
+			property='og:image:type'
+			content='image/png'
+		/>
+		<meta
+			property='og:image:width'
+			content='1200'
+		/>
+		<meta
+			property='og:image:height'
+			content='630'
+		/>
+		<meta
+			property='og:image:alt'
+			content={imageAlt}
+		/>
+		<meta
+			name='twitter:card'
+			content='summary_large_image'
+		/>
+		<meta
+			name='twitter:title'
+			content={title}
+		/>
+		<meta
+			name='twitter:description'
+			content={description}
+		/>
+		<meta
+			name='twitter:image'
+			content={image}
+		/>
+		<meta
+			name='twitter:image:alt'
+			content={imageAlt}
+		/>
+
+		<script
+			type='application/ld+json'
+			set:html={JSON.stringify(person)}
+		/>
+
 		<link
 			rel='icon'
 			type='image/svg+xml'
@@ -24,34 +147,33 @@ const { title = 'Franklin Alvarado — Full Stack Web Developer' } = Astro.props
 		<link
 			rel='icon'
 			href='/favicon.ico'
+			sizes='32x32'
+		/>
+		<link
+			rel='apple-touch-icon'
+			href='/apple-touch-icon.png'
+		/>
+		<link
+			rel='sitemap'
+			href='/sitemap.xml'
 		/>
 		<meta
 			name='generator'
 			content={Astro.generator}
 		/>
-		<title>{title}</title>
-		<!-- Trial fonts via Fontsource CDN (jsDelivr) — not installed as a dependency yet.
-		     Geist = text, Geist Mono = document apparatus, Kalam = margin notes. -->
-		<link
-			rel='stylesheet'
-			href='https://cdn.jsdelivr.net/npm/@fontsource/geist@5/400.css'
+		<!-- Fonts, served from this site (see astro.config). Geist = text, Geist
+		     Mono = document apparatus, Kalam = margin notes. The first screen needs
+		     Geist and Geist Mono, so only those two are preloaded. -->
+		<!-- Body text and the title; 500 is a few words, it can come later. -->
+		<Font
+			cssVariable='--font-geist'
+			preload={[{ weight: 400 }, { weight: 600 }]}
 		/>
-		<link
-			rel='stylesheet'
-			href='https://cdn.jsdelivr.net/npm/@fontsource/geist@5/500.css'
+		<Font
+			cssVariable='--font-geist-mono'
+			preload
 		/>
-		<link
-			rel='stylesheet'
-			href='https://cdn.jsdelivr.net/npm/@fontsource/geist@5/600.css'
-		/>
-		<link
-			rel='stylesheet'
-			href='https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/400.css'
-		/>
-		<link
-			rel='stylesheet'
-			href='https://cdn.jsdelivr.net/npm/@fontsource/kalam@5/400.css'
-		/>
+		<Font cssVariable='--font-hand' />
 	</head>
 	<body>
 		<slot />

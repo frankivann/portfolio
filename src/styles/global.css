@@ -1,21 +1,23 @@
 @import 'tailwindcss';
 
+/* Fonts come from Astro (astro.config → <Font /> in the layout), served from
+   this site. Each --font-* variable holds the family plus a fallback tuned to
+   its metrics; inline keeps the utilities pointing at those variables. */
+@theme inline {
+	/* One superfamily for the printed layer: Geist for text, Geist Mono for the
+	   document apparatus (folios, labels, figure captions, metadata). */
+	--font-sans: var(--font-geist);
+	--font-mono: var(--font-geist-mono);
+
+	/* The hand: margin notes only. If it appears anywhere else it stops meaning
+	   "someone wrote on this page". */
+	--font-kalam: var(--font-hand);
+}
+
 @theme {
 	/* One accent, one job: everything that is "alive" on the page — the ruler,
 	   hovered links, referenced figures, the text selection. Never decoration. */
 	--color-primary: #ff6a00;
-
-	/* One superfamily for the printed layer: Geist for text, Geist Mono for the
-	   document apparatus (folios, labels, figure captions, metadata). */
-	--font-sans:
-		'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-		'Helvetica Neue', Arial, sans-serif;
-	--font-mono:
-		'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-	/* The hand: margin notes only. If it appears anywhere else it stops meaning
-	   "someone wrote on this page". */
-	--font-kalam: 'Kalam', cursive;
 
 	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }

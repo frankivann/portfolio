@@ -1,0 +1,121 @@
+<!doctype html>
+<!--
+  Share image (Open Graph / Twitter), 1200×630. The portfolio's cover, set as
+  one sheet of paper on the page: same type, same mark, same restraint.
+  Rebuild: node scripts/og/render.mjs (needs Chrome; writes public/og.png).
+-->
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist@5/400.css" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist@5/500.css" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist@5/600.css" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/400.css" />
+		<style>
+			* {
+				margin: 0;
+				box-sizing: border-box;
+			}
+
+			html,
+			body {
+				width: 1200px;
+				height: 630px;
+			}
+
+			body {
+				/* The page (mist-100) with one sheet on it. */
+				background: oklch(96.3% 0.002 197.1);
+				padding: 48px 72px 0;
+				font-family: 'Geist', sans-serif;
+				-webkit-font-smoothing: antialiased;
+				font-feature-settings: 'ss01', 'cv11';
+				overflow: hidden;
+			}
+
+			.sheet {
+				height: 100%;
+				background: white;
+				padding: 44px 64px 0;
+				display: flex;
+				flex-direction: column;
+				box-shadow:
+					0 1px 1px rgb(0 0 0 / 0.03),
+					0 2px 6px -2px rgb(0 0 0 / 0.04),
+					0 24px 48px -24px rgb(0 0 0 / 0.1);
+			}
+
+			.label {
+				font-family: 'Geist Mono', monospace;
+				font-size: 15px;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: #a3a3a3;
+			}
+
+			header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding-bottom: 22px;
+				border-bottom: 1px solid #e5e5e5;
+			}
+
+			.mark {
+				width: 30px;
+				height: 30px;
+				border-radius: 50%;
+				background: #ff6a00;
+			}
+
+			main {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				padding-bottom: 40px;
+			}
+
+			.role {
+				color: #737373;
+			}
+
+			h1 {
+				margin-top: 22px;
+				font-size: 104px;
+				line-height: 0.95;
+				font-weight: 600;
+				letter-spacing: -0.045em;
+				color: #171717;
+			}
+
+			p {
+				margin-top: 30px;
+				font-size: 28px;
+				line-height: 1.4;
+				color: #737373;
+			}
+
+			strong {
+				font-weight: 500;
+				color: #262626;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="sheet">
+			<header>
+				<span class="mark"></span>
+				<span class="label">Portfolio</span>
+			</header>
+			<main>
+				<span class="label role">Tech Lead · Full Stack Web Developer</span>
+				<h1>Franklin Alvarado</h1>
+				<p>
+					<strong>+5 años de experiencia.</strong> Enfocado en el producto y el
+					negocio.
+				</p>
+			</main>
+		</div>
+	</body>
+</html>

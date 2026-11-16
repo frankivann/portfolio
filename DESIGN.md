@@ -13,16 +13,21 @@ colors:
   ink: "#171717"
 typography:
   heading:
-    fontFamily: "Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
     fontWeight: 600
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.03em"
   body:
-    fontFamily: "Manrope, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+    fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif"
     fontWeight: 400
-    lineHeight: 1.6
-  accent:
-    fontFamily: "Caveat, cursive"
-    fontWeight: 700
+    lineHeight: 1.7
+  label:
+    fontFamily: "'Geist Mono', ui-monospace, monospace"
+    fontWeight: 400
+    letterSpacing: "0.08em"
+    textTransform: "uppercase"
+  hand:
+    fontFamily: "Kalam, cursive"
+    fontWeight: 400
 rounded:
   none: "0px"
   sm: "8px"
@@ -64,14 +69,14 @@ components:
 
 The system is built around one governing image: a blank sheet of paper resting on a quiet desk. Proyectos renders this literally — a borderless white surface that overlaps the section above it via negative margin and holds a single, very soft ambient shadow. It is the one moment of elevation in an otherwise flat interface. Everywhere else — Header, Hero, navigation — stays quiet: hairline borders, no heavy shadows, a near-black/near-white grayscale palette with a single orange "signal" that appears in at most one place per view and is never a background wash.
 
-The Caveat cursive project title (e.g. "Multibrand") reads like a handwritten note on that sheet — the system's one deliberately human, informal voice, set against an otherwise precise, geometric heading face (Geist). This tension — one handwritten mark on an otherwise typographically disciplined page — is the system's signature move, not an inconsistency to resolve.
+The Kalam margin notes (e.g. "3 webs, 3 veces el mismo trabajo") read like someone annotating the sheet — the system's one deliberately human, informal voice, set against an otherwise precise, geometric face (Geist). This tension — a handwritten mark in the margin of a typographically disciplined page — is the system's signature move, not an inconsistency to resolve.
 
 Confirmed visual rejections: no colorful brand-icon treatment anywhere except inside the TechStack avatar stack, where per-tech brand color is the one deliberate exception; no CV-download button in Hero (built once, explicitly rejected — "no me gustó"); no directional/offset shadows anywhere (tried, replaced with ambient-only after it read unevenly).
 
 **Key Characteristics:**
 - One sheet, one moment of elevation — every other surface stays flat.
 - Grayscale plus a single rare "signal" accent, never a dominant brand color.
-- Geist carries structure; Caveat is the one handwritten accent, reserved for project titles.
+- Geist carries the text, Geist Mono the document apparatus; Kalam is the one handwritten accent, reserved for margin notes.
 - Circles are the default interactive shape — logo, icon buttons, nav indicator, avatar stack.
 
 ## Colors
@@ -98,21 +103,27 @@ Near-monochrome grayscale system with one rare accent; every color below is name
 
 ## Typography
 
-**Heading Font:** Geist (with system-ui fallback) — CDN trial, not yet an installed dependency.
-**Body Font:** Manrope (same fallback stack) — CDN trial.
-**Accent Font:** Caveat, cursive — CDN trial, reserved exclusively for project titles inside the "hoja."
+**Text Font:** Geist (400, 500, 600) — headings, body, navigation. One family for the whole printed layer.
+**Apparatus Font:** Geist Mono (400) — the document's machinery: letterheads, folios, labels, figure captions, metadata, the payment card's number.
+**Hand Font:** Kalam (400) — margin notes only.
 
-**Character:** Geist gives structure and UI text quiet, geometric precision. Manrope reads a touch warmer for body copy. Caveat is the system's one handwritten voice — a signature, not a heading style.
+**Loading:** Astro Fonts API (`fonts` in `astro.config.mjs`, Fontsource provider, latin subset). Files are downloaded at build time and served from the site (`/_astro/fonts`), never from a CDN. Geist 400/600 and Geist Mono are preloaded (the first screen); Geist 500 and Kalam load after. Astro generates metric-matched fallbacks (Arial for Geist, Courier New for Geist Mono) so text doesn't shift when the fonts arrive. In CSS the families are exposed as `--font-geist`, `--font-geist-mono` and `--font-hand`, mapped to Tailwind's `font-sans`, `font-mono` and `font-kalam`.
+
+**Character:** Geist gives the page quiet, geometric precision; Geist Mono, in small uppercase with open tracking, reads as the printed apparatus of a document. Kalam is the system's one handwritten voice — someone writing in the margin, not a heading style.
+
+**Weights:** only 400, 500 and 600 exist for Geist, and 400 for Geist Mono and Kalam. Never ask for a weight that isn't loaded (the browser would fake a bold).
 
 ### Hierarchy
-- **Display** (Hero name; semibold, `text-5xl` → `text-8xl` responsive, `tracking-tight`): the one large display moment on the page.
-- **Accent** (Caveat project title, e.g. "Multibrand"; bold, `text-4xl` → `text-6xl`, Ink): the handwritten annotation on the sheet.
-- **Title** (sub-section headings, e.g. "SEO"; semibold, `text-lg`, Ink): always paired with a muted numeral prefix (`text-sm`, Faint Grey) — "01 SEO."
-- **Body** (descriptions; regular, `text-sm`/`text-lg` responsive, Soft Graphite, `leading-relaxed`): 65–75ch reading width where the layout allows it.
-- **Label** (nav links, UI text; regular, `text-sm`, Soft Graphite → Ink on hover/active).
+- **Display** (cover name; Geist 600, `text-5xl` → `text-[5.25rem]`, `tracking-[-0.04em]`, Ink): the one large display moment.
+- **Heading** (project title, e.g. "Multibrand"; Geist 600, `text-4xl` → `text-6xl`, `tracking-[-0.03em]`, Ink).
+- **Figure** (results, e.g. "40%", "×3"; Geist 600, `text-7xl` → `text-8xl`, `tracking-[-0.05em]`, tabular numerals).
+- **Lead** (project summary; Geist 400, `text-lg` → `text-xl`, `leading-relaxed`, Soft Graphite).
+- **Body** (Geist 400, 17px, `leading-[1.7]`, neutral-700). Run-in heads ("El problema:") in Geist 500, Ink.
+- **Label** (`.label`; Geist Mono 400, 11px, `tracking-[0.08em]`, uppercase, Faint Grey): letterheads, folios, `dt`s, figure captions.
+- **Note** (`MarginNote`; Kalam 400, 17px, `leading-snug`, Soft Graphite, rotated −2°).
 
 ### Named Rules
-**The One Handwritten Voice Rule.** Caveat is reserved for project titles inside the "hoja." Never use it for headings, body copy, or UI chrome.
+**The One Handwritten Voice Rule.** Kalam is reserved for margin notes (and the occasional hand-written tag like "pronto"). Never use it for headings, body copy, or UI chrome — if it appears elsewhere it stops meaning "someone wrote on this page."
 
 ## Layout
 

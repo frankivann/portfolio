@@ -30,10 +30,11 @@ const {
 		slot='meta'
 		class='flex items-center gap-2.5'
 	>
+		<!-- 28px circle, 44px hit area (the ::before); icon at 4.7:1 on white. -->
 		<button
 			type='button'
 			data-pd-toggle
-			class='label grid size-7 shrink-0 place-items-center rounded-full border border-neutral-200 transition-colors hover:border-neutral-400 hover:text-neutral-900'
+			class='relative grid size-7 shrink-0 place-items-center rounded-full border border-neutral-300 text-neutral-500 transition-colors before:absolute before:-inset-2 hover:border-neutral-400 hover:text-neutral-900'
 			aria-label='Pausar animación'
 		>
 			<svg
@@ -320,11 +321,7 @@ const {
 </Row>
 
 <style>
-	/* ------------------------------------------------------------ Scale
-	   The plate is the container; 1em = 1/58 of its width on the wide layout
-	   (the product's panel, a little tighter), 1/32 on the stacked one. */
-	/* A picture made of text: it can't be selected, and the cursor stays the
-	   page's arrow — no I-beam over fields you can't type in. */
+	/* A picture made of text: it can't be selected. */
 	.pd {
 		container-type: inline-size;
 		background: #f1f5f9;
@@ -332,6 +329,11 @@ const {
 		-webkit-user-select: none;
 	}
 
+	/* ------------------------------------------------------------ Scale
+	   The plate is the container; 1em = 1/58 of its width on the wide layout
+	   (the product's panel, a little tighter). Stacked, the picture is cropped
+	   to the card and the number field, so 1em can be 1/24: the card fills the
+	   width and the type stays legible on a phone. */
 	.pd-stage {
 		--ink: #0f172a;
 		--text: #334155;
@@ -342,7 +344,7 @@ const {
 		--card: #232877;
 
 		font-family: var(--font-sans);
-		font-size: calc(100cqw / 32);
+		font-size: calc(100cqw / 24);
 		color: var(--text);
 		padding: 0.6em;
 		line-height: 1.4;
@@ -360,7 +362,15 @@ const {
 		background: white;
 		border: 1px solid var(--hair);
 		border-radius: 0.6em;
-		padding: 2.2em 1.75em 2em;
+		padding: 1.6em 1.2em 1.6em;
+	}
+
+	/* Stacked crop: the card, its note and the number field — the part that
+	   moves and tells the story. The rest of the form returns when wide. */
+	@container (max-width: 599.98px) {
+		.pd-form > :not(:first-child) {
+			display: none;
+		}
 	}
 
 	@container (min-width: 600px) {
@@ -656,8 +666,6 @@ const {
 		font-family: var(--font-mono);
 		font-size: 1.15em;
 		font-weight: 400; /* Geist Mono loads at 400 only: no faux bold */
-		letter-spacing: 0.08em;
-		white-space: pre;
 		display: flex;
 		gap: 0.55em;
 		line-height: 1;
@@ -799,7 +807,8 @@ const {
 				num: (num + '•'.repeat(16 - num.length)).replace(/(.{4})(?=.)/g, '$1 '),
 				name: NAME.slice(0, typed(NAME, T.name, t).length) || 'Nombre Apellido',
 				exp: `${mm.padEnd(2, '•')}/${yy.padEnd(2, '•')}`,
-				visa: num.startsWith('4')
+				// Fades with the rest while the loop clears.
+				visa: num.startsWith('4') && t < T.clear
 			}
 		}
 	}
@@ -830,7 +839,8 @@ const {
 		// The card number, as on the product: 4 groups of 4 fixed, clipped slots.
 		// When a slot changes, the old character slides up and out while the new
 		// one rises in from below — a dot turns into a digit like an odometer.
-		const still = matchMedia('(prefers-reduced-motion: reduce)').matches
+		// Read live, not once: the preference can change with the page open.
+		const reduce = matchMedia('(prefers-reduced-motion: reduce)')
 		const numEl = cards.get('num')!
 		const glyph = (ch: string) => {
 			const span = document.createElement('span')
@@ -862,7 +872,9 @@ const {
 				if (current.textContent === ch) return
 				const next = glyph(ch)
 				slot.append(next)
-				if (still) return current.remove()
+				// Back to a dot only happens when the loop restarts, under the
+				// fade: swap at once, or the digits would show again on the way out.
+				if (reduce.matches || ch === '•') return current.remove()
 				// Leaving: up and out, quicker, out of the flow.
 				current.classList.add('is-leaving')
 				current
@@ -894,14 +906,6 @@ const {
 			if (progress) progress.style.transform = `scaleX(${t / T.loop})`
 		}
 
-		// Reduced motion: the finished form, still. No controls to offer.
-		if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-			render(T.check + 1)
-			for (const el of fields.values()) el.classList.remove('is-focused')
-			toggle?.parentElement?.classList.add('hidden')
-			return
-		}
-
 		let t = 0
 		let last = 0
 		let paused = false
@@ -916,13 +920,22 @@ const {
 		}
 		const sync = () => {
 			cancelAnimationFrame(frame)
+			// Reduced motion: the finished form, still. No controls to offer.
+			toggle?.parentElement?.classList.toggle('hidden', reduce.matches)
+			if (reduce.matches) {
+				render(T.check + 1)
+				for (const el of fields.values()) el.classList.remove('is-focused')
+				return
+			}
+			render(t)
 			if (visible && !paused) {
 				last = performance.now()
 				frame = requestAnimationFrame(tick)
 			}
 		}
 
-		render(0)
+		sync()
+		reduce.addEventListener('change', sync)
 
 		// Plays only while on screen, like a muted autoplay video.
 		new IntersectionObserver(

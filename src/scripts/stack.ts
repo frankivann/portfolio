@@ -2,8 +2,20 @@
 // (a stuck sheet reports where it is pinned, not where it lives), so positions
 // are rebuilt from layout heights instead.
 
-/** Breathing room between a pinned sheet and the viewport edge, in px. */
+/** Breathing room between a pinned sheet and the bottom of the viewport, in px. */
 export const STICK_GAP = 32
+
+/**
+ * Where a pinned sheet's top settles, in px. CSS owns it (`--stick-top`): the
+ * plain gap on wide screens, the gap plus the top bar where the bar shows.
+ */
+export function stickTop() {
+	return (
+		parseFloat(
+			getComputedStyle(document.documentElement).getPropertyValue('--stick-top')
+		) || STICK_GAP
+	)
+}
 
 export function getSheets() {
 	return Array.from(document.querySelectorAll<HTMLElement>('[data-sheet]'))
@@ -15,6 +27,7 @@ export function getArrivals(sheets = getSheets()) {
 
 	const stack = sheets[0].parentElement!
 	const maxScroll = document.documentElement.scrollHeight - innerHeight
+	const top = stickTop()
 
 	let y =
 		stack.getBoundingClientRect().top +
@@ -23,7 +36,7 @@ export function getArrivals(sheets = getSheets()) {
 
 	return sheets.map((sheet) => {
 		y += parseFloat(getComputedStyle(sheet).marginTop)
-		const arrival = Math.min(maxScroll, Math.max(0, y - STICK_GAP))
+		const arrival = Math.min(maxScroll, Math.max(0, y - top))
 		y += sheet.offsetHeight
 		return arrival
 	})

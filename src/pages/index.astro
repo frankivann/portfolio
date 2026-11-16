@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import Aside from '../components/Aside.astro'
+import MobileNav from '../components/MobileNav.astro'
 // Previous navigation, kept to switch back to: replace <Aside /> with it.
 // import ScrollProgress from '../components/ScrollProgress.astro'
 import Sheet from '../components/Sheet.astro'
@@ -30,6 +31,7 @@ const updated = new Intl.DateTimeFormat('es', {
 	<div
 		class='xl:mx-auto xl:grid xl:min-h-svh xl:max-w-[1480px] xl:grid-cols-[220px_minmax(0,1fr)] xl:gap-x-8 xl:border-l xl:border-black/6 xl:px-4'
 	>
+		<MobileNav />
 		<Aside />
 
 		<SheetStack>

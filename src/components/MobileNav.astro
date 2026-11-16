@@ -1,0 +1,404 @@
+---
+// Below xl the aside has no room, so its index moves here: a slim bar over the
+// pile (the mark and a two-line menu button) and, when opened, one more sheet
+// of paper that drops in under the bar — the menu is a page of the document,
+// laid out like its table of contents.
+import { portfolio, profiles, resources } from '../data/nav'
+import { pages } from '../data/pages'
+
+const section = (id?: string) => pages.find((page) => page.id === id)?.section
+---
+
+<!-- The bar. Page-coloured, so the sheets slide under it like under the edge of
+     a desk; a short fade softens that edge. -->
+<header
+	class='mnav-bar fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between bg-mist-100 px-3 sm:px-6 xl:hidden'
+>
+	<a
+		href='#portada'
+		data-goto='portada'
+		aria-label='Portada'
+		class='group -ml-2.5 grid size-11 place-items-center'
+	>
+		<span
+			class='size-6 rounded-full bg-primary transition-transform duration-500 ease-out-expo group-active:scale-90'
+		></span>
+	</a>
+
+	<button
+		type='button'
+		data-mnav-open
+		aria-label='Abrir menú'
+		aria-haspopup='dialog'
+		aria-expanded='false'
+		aria-controls='mnav'
+		class='mnav-burger -mr-3 grid size-11 place-items-center text-neutral-900'
+	>
+		<span aria-hidden='true'></span>
+		<span aria-hidden='true'></span>
+	</button>
+</header>
+
+<dialog
+	id='mnav'
+	class='mnav xl:hidden'
+	aria-label='Menú'
+>
+	<!-- The header itself, grown downward: the bar again (exactly over the real
+	     one, only the two lines turn into a cross) and the index under it, all
+	     in the page's colour — one piece, not another sheet. -->
+	<div
+		class='mnav-panel max-h-svh overflow-y-auto border-b border-black/6 bg-mist-100'
+	>
+		<div class='flex h-14 items-center justify-between px-3 sm:px-6'>
+			<a
+				href='#portada'
+				data-goto='portada'
+				aria-label='Portada'
+				class='-ml-2.5 grid size-11 place-items-center'
+			>
+				<span class='size-6 rounded-full bg-primary'></span>
+			</a>
+
+			<button
+				type='button'
+				data-mnav-close
+				aria-label='Cerrar menú'
+				class='mnav-burger mnav-cross -mr-3 grid size-11 place-items-center text-neutral-900'
+			>
+				<span aria-hidden='true'></span>
+				<span aria-hidden='true'></span>
+			</button>
+		</div>
+
+		<!-- The index, inset like the sheets' text (side margin + sheet padding),
+	     so it reads as part of the page, not pressed to the edge. Focus lands
+	     here (not on the cross): opening by touch shows no focus ring, and Tab
+	     continues into the links. -->
+		<div
+			class='mnav-body px-9 pt-6 pb-9 outline-none sm:px-18 sm:pt-8'
+			tabindex='-1'
+			autofocus
+		>
+			<nav aria-label='Secciones'>
+				<p class='label'>Portfolio</p>
+				<ul class='mt-2'>
+					{
+						portfolio.map((entry) => (
+							<li>
+								{entry.id ? (
+									<a
+										href={`#${entry.id}`}
+										data-goto={entry.id}
+										data-nav={entry.id}
+										class='mnav-link flex min-h-11 items-baseline gap-3 py-1.5 text-[1.375rem] leading-[1.25] font-medium tracking-[-0.02em] text-neutral-900'
+									>
+										<span class='label w-5 shrink-0 tabular-nums'>
+											{section(entry.id) ?? ''}
+										</span>
+										{entry.label}
+										<span class='mnav-dot size-2 shrink-0 scale-0 self-center rounded-full bg-neutral-900 transition-transform duration-300 ease-out-expo' />
+									</a>
+								) : (
+									<span class='flex min-h-11 items-baseline gap-3 py-1.5 text-[1.375rem] leading-[1.25] font-medium tracking-[-0.02em] text-neutral-300'>
+										<span class='w-5 shrink-0' />
+										{entry.label}
+										{entry.tag && (
+											<span class='font-kalam text-[15px] leading-none tracking-normal text-primary underline decoration-primary decoration-wavy underline-offset-4'>
+												{entry.tag}
+											</span>
+										)}
+									</span>
+								)}
+							</li>
+						))
+					}
+				</ul>
+
+				<p class='label mt-7'>Sobre mí</p>
+				<ul class='mt-2'>
+					{
+						resources.map((resource) => (
+							<li>
+								<span class='flex min-h-11 items-center pl-8 text-[17px] text-neutral-300'>
+									{resource}
+								</span>
+							</li>
+						))
+					}
+				</ul>
+			</nav>
+
+			<ul
+				class='mt-8 flex flex-wrap gap-x-6 gap-y-3 border-t border-black/6 pt-5'
+			>
+				{
+					profiles.map((profile) => (
+						<li>
+							<a
+								href={profile.url}
+								target='_blank'
+								rel='noopener noreferrer'
+								class='flex min-h-11 items-center gap-2.5 text-[13px] leading-[1.35]'
+							>
+								<span
+									class='grid size-8 shrink-0 place-items-center rounded-lg text-white'
+									style={`background-color: ${profile.tile}`}
+								>
+									<svg
+										viewBox='0 0 24 24'
+										class='size-4'
+										fill='currentColor'
+										aria-hidden='true'
+									>
+										<path d={profile.icon} />
+									</svg>
+								</span>
+								<span>
+									<span class='block text-neutral-900'>{profile.network}</span>
+									<span class='block text-neutral-500'>{profile.handle}</span>
+								</span>
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</div>
+</dialog>
+
+<style>
+	/* ------------------------------------------------------------ Bar */
+	.mnav-bar::after {
+		content: '';
+		position: absolute;
+		inset: 100% 0 auto;
+		height: 0.75rem;
+		background: linear-gradient(var(--color-mist-100), transparent);
+		pointer-events: none;
+	}
+
+	/* Two hairlines, 20px wide. In the menu's copy of the bar they cross. */
+	.mnav-burger {
+		position: relative;
+	}
+
+	.mnav-burger span {
+		grid-area: 1 / 1;
+		width: 1.25rem;
+		height: 1.5px;
+		background: currentColor;
+	}
+
+	.mnav-burger span:first-child {
+		translate: 0 -3.5px;
+	}
+
+	.mnav-burger span:last-child {
+		translate: 0 3.5px;
+	}
+
+	.mnav[open] .mnav-cross span {
+		animation: mnav-cross 400ms var(--ease-out-expo) both;
+	}
+
+	.mnav[open] .mnav-cross span:last-child {
+		animation-name: mnav-cross-b;
+	}
+
+	@keyframes mnav-cross {
+		from {
+			translate: 0 -3.5px;
+			rotate: 0deg;
+		}
+		to {
+			translate: 0 0;
+			rotate: 45deg;
+		}
+	}
+
+	@keyframes mnav-cross-b {
+		from {
+			translate: 0 3.5px;
+			rotate: 0deg;
+		}
+		to {
+			translate: 0 0;
+			rotate: -45deg;
+		}
+	}
+
+	/* ------------------------------------------------------------ Menu */
+	/* The dialog covers the viewport and is see-through; clicks that land on
+	   it, below the header panel, close it. */
+	.mnav {
+		position: fixed;
+		inset: 0;
+		width: 100%;
+		max-width: none;
+		height: 100%;
+		max-height: none;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		overflow: hidden;
+	}
+
+	.mnav::backdrop {
+		background: rgb(20 20 20 / 0.14);
+	}
+
+	.mnav-panel {
+		overscroll-behavior: contain;
+	}
+
+	/* Opening: the header unrolls downward from the bar (a clip, so nothing
+	   is laid out again), the index follows a beat later. Closing rolls it
+	   back up. The bar row never moves. */
+	.mnav[open]::backdrop {
+		animation: mnav-fade 300ms ease-out both;
+	}
+
+	.mnav[open] .mnav-panel {
+		animation: mnav-unroll 450ms var(--ease-out-expo) both;
+	}
+
+	.mnav[open] .mnav-body {
+		animation: mnav-rise 450ms var(--ease-out-expo) 60ms both;
+	}
+
+	.mnav.is-closing::backdrop {
+		animation: mnav-fade 220ms ease-in reverse both;
+	}
+
+	.mnav.is-closing .mnav-panel {
+		animation: mnav-roll 220ms ease-in both;
+	}
+
+	.mnav.is-closing .mnav-body {
+		animation: mnav-fade 150ms ease-in reverse both;
+	}
+
+	@keyframes mnav-fade {
+		from {
+			opacity: 0;
+		}
+	}
+
+	@keyframes mnav-unroll {
+		from {
+			clip-path: inset(0 0 calc(100% - 3.5rem) 0);
+		}
+		to {
+			clip-path: inset(0);
+		}
+	}
+
+	@keyframes mnav-roll {
+		from {
+			clip-path: inset(0);
+		}
+		to {
+			clip-path: inset(0 0 calc(100% - 3.5rem) 0);
+		}
+	}
+
+	@keyframes mnav-rise {
+		from {
+			opacity: 0;
+			translate: 0 -0.5rem;
+		}
+	}
+
+	/* The sheet on screen: same dot as in the aside. */
+	.mnav-link[aria-current] .mnav-dot {
+		scale: 1;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		/* No unrolling: the header simply fades in and out. */
+		.mnav[open] .mnav-panel,
+		.mnav.is-closing .mnav-panel {
+			animation-name: mnav-fade;
+		}
+
+		.mnav.is-closing .mnav-panel {
+			animation-direction: reverse;
+		}
+
+		.mnav[open] .mnav-body {
+			animation: none;
+		}
+
+		.mnav[open] .mnav-cross span {
+			animation-duration: 1ms;
+		}
+	}
+</style>
+
+<script>
+	const dialog = document.querySelector<HTMLDialogElement>('#mnav')!
+	const opener = document.querySelector<HTMLButtonElement>('[data-mnav-open]')!
+	let closing = false
+
+	const open = () => {
+		dialog.showModal()
+		opener.setAttribute('aria-expanded', 'true')
+	}
+
+	// Rolls the header back up, then closes for real.
+	const panel = dialog.querySelector<HTMLElement>('.mnav-panel')!
+	const close = () => {
+		if (!dialog.open || closing) return
+		closing = true
+		dialog.classList.add('is-closing')
+		const done = () => {
+			if (!closing) return
+			panel.removeEventListener('animationend', onEnd)
+			dialog.classList.remove('is-closing')
+			dialog.close()
+			opener.setAttribute('aria-expanded', 'false')
+			closing = false
+		}
+		// The index's own fade ends first and bubbles up: wait for the panel's.
+		const onEnd = (event: AnimationEvent) => event.target === panel && done()
+		panel.addEventListener('animationend', onEnd)
+		// Safety net if no animation runs.
+		setTimeout(() => closing && done(), 400)
+	}
+
+	opener.addEventListener('click', open)
+	dialog.querySelector('[data-mnav-close]')!.addEventListener('click', close)
+
+	// Esc: animate instead of the instant native close.
+	dialog.addEventListener('cancel', (event) => {
+		event.preventDefault()
+		close()
+	})
+
+	dialog.addEventListener('click', (event) => {
+		const target = event.target as HTMLElement
+		// Outside the bar and the sheet: the see-through dialog itself.
+		if (target === dialog) return close()
+		// A link was followed (sheets scroll via the stack's [data-goto]).
+		if (target.closest('a')) close()
+	})
+
+	// The page stays still behind the open menu without hiding its scrollbar
+	// (hiding it would change the page width): wheel and touch scrolling are
+	// simply ignored outside the panel, which keeps its own scroll.
+	const holdPage = (event: Event) => {
+		if (!panel.contains(event.target as Node)) event.preventDefault()
+	}
+	dialog.addEventListener('wheel', holdPage, { passive: false })
+	dialog.addEventListener('touchmove', holdPage, { passive: false })
+
+	// Growing past the breakpoint hides the bar: never leave the menu open.
+	matchMedia('(min-width: 80rem)').addEventListener('change', (query) => {
+		if (query.matches && dialog.open) {
+			dialog.close()
+			opener.setAttribute('aria-expanded', 'false')
+		}
+	})
+</script>

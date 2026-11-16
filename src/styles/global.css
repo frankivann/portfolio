@@ -30,6 +30,19 @@
 		overflow-anchor: none;
 	}
 
+	/* Where a pinned sheet's top settles. Below xl a top bar (MobileNav, 56px)
+	   sits over the pile, so sheets pin under it with the side margin's gap.
+	   In px: the stack script reads it as a number. */
+	:root {
+		--stick-top: 68px;
+	}
+
+	@media (min-width: 80rem) {
+		:root {
+			--stick-top: 32px;
+		}
+	}
+
 	body {
 		@apply bg-mist-100 text-neutral-700 antialiased;
 		font-feature-settings: 'ss01', 'cv11';
@@ -53,7 +66,7 @@
 	   never a stretch of scroll where nothing moves. */
 	.sheet {
 		position: sticky;
-		top: var(--stick, 2rem);
+		top: var(--stick, var(--stick-top));
 		transform-origin: 50% var(--origin, 50%);
 		box-shadow:
 			0 1px 1px rgb(0 0 0 / 0.03),
@@ -94,7 +107,7 @@
 			animation-timing-function: linear;
 			animation-fill-mode: both;
 			animation-timeline: var(--next-timeline);
-			animation-range: cover 0% cover calc(100vh - 2rem);
+			animation-range: cover 0% cover calc(100vh - var(--stick-top));
 		}
 
 		.sheet[data-has-next] {

@@ -12,14 +12,14 @@ const scope = pages.map((_, i) => `--sheet-${i}`).join(', ')
 
 <main
 	id='stack'
-	class='min-w-0 pt-[8vh] pb-[14vh]'
+	class='min-w-0 pt-(--stick-top) pb-[14vh] xl:pt-[8vh]'
 	style={`timeline-scope: ${scope}`}
 >
 	<slot />
 </main>
 
 <script>
-	import { STICK_GAP, getSheets, goToSheet } from '../scripts/stack'
+	import { STICK_GAP, getSheets, goToSheet, stickTop } from '../scripts/stack'
 
 	const sheets = getSheets()
 	const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -33,10 +33,11 @@ const scope = pages.map((_, i) => `--sheet-${i}`).join(', ')
 
 	function layout() {
 		const vh = innerHeight
+		const top = stickTop()
 
 		for (const sheet of sheets) {
 			// Short sheets pin near the top; tall ones once their bottom is in view.
-			const stick = `${Math.min(STICK_GAP, vh - sheet.offsetHeight - STICK_GAP)}px`
+			const stick = `${Math.min(top, vh - sheet.offsetHeight - STICK_GAP)}px`
 			// Only touch styles when the value actually changes: every write
 			// invalidates style for the sheet and its whole subtree.
 			if (sheet.style.getPropertyValue('--stick') === stick) continue
@@ -60,7 +61,7 @@ const scope = pages.map((_, i) => `--sheet-${i}`).join(', ')
 			if (!next) return
 
 			const top = next.getBoundingClientRect().top
-			const covered = Math.min(1, Math.max(0, (vh - top) / (vh - STICK_GAP)))
+			const covered = Math.min(1, Math.max(0, (vh - top) / (vh - stickTop())))
 			sheet.style.setProperty('--covered', covered.toFixed(3))
 		})
 	}

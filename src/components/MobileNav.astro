@@ -10,7 +10,7 @@ const section = (id?: string) => pages.find((page) => page.id === id)?.section
 ---
 
 <!-- The bar. Page-coloured, so the sheets slide under it like under the edge of
-     a desk; a short fade softens that edge. -->
+     a desk: a clean edge, no fade. -->
 <header
 	class='mnav-bar fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between bg-mist-100 px-3 sm:px-6 xl:hidden'
 >
@@ -169,15 +169,6 @@ const section = (id?: string) => pages.find((page) => page.id === id)?.section
 
 <style>
 	/* ------------------------------------------------------------ Bar */
-	.mnav-bar::after {
-		content: '';
-		position: absolute;
-		inset: 100% 0 auto;
-		height: 0.75rem;
-		background: linear-gradient(var(--color-mist-100), transparent);
-		pointer-events: none;
-	}
-
 	/* Two hairlines, 20px wide. In the menu's copy of the bar they cross. */
 	.mnav-burger {
 		position: relative;

@@ -331,9 +331,9 @@ const {
 
 	/* ------------------------------------------------------------ Scale
 	   The plate is the container; 1em = 1/58 of its width on the wide layout
-	   (the product's panel, a little tighter). Stacked, the picture is cropped
-	   to the card and the number field, so 1em can be 1/24: the card fills the
-	   width and the type stays legible on a phone. */
+	   (the product's panel, a little tighter). Stacked, the whole form follows
+	   the card as on the product's phone layout, at 1em = 1/24: the card fills
+	   the width and the type stays legible on a phone. */
 	.pd-stage {
 		--ink: #0f172a;
 		--text: #334155;
@@ -363,14 +363,6 @@ const {
 		border: 1px solid var(--hair);
 		border-radius: 0.6em;
 		padding: 1.6em 1.2em 1.6em;
-	}
-
-	/* Stacked crop: the card, its note and the number field — the part that
-	   moves and tells the story. The rest of the form returns when wide. */
-	@container (max-width: 599.98px) {
-		.pd-form > :not(:first-child) {
-			display: none;
-		}
 	}
 
 	@container (min-width: 600px) {
